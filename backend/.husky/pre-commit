@@ -1,12 +1,12 @@
 #!/bin/bash
 
-cd ./backend
+cd backend
 
 # Run yarn format
-yarn run format
+npm run format
 
 # Run yarn lint
-yarn run lint
+npm run lint
 
 # Get the exit code of the previous commands
 exit_code=$?
