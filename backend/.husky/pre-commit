@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Run yarn format
+yarn run format
+
+# Run yarn lint
+yarn run lint
+
+# Get the exit code of the previous commands
+exit_code=$?
+
+# Exit with the appropriate exit code
+exit $exit_code
