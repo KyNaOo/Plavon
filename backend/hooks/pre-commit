@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ./backend
+
 # Run yarn format
 yarn run format
 

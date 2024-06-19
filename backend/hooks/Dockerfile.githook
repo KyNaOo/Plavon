@@ -1,0 +1,4 @@
+# from https://medium.com/hackernoon/using-git-hooks-in-a-dockerized-environment-55372c40815f
+FROM busybox:stable
+
+ENTRYPOINT sh -c "cd /tmp/hooks && ls | xargs chmod +x && cd /tmp/.git/hooks && find ../../hooks -type f -exec ln -sf {} /tmp/.git/hooks/ \; && echo 'githooks installed'"
