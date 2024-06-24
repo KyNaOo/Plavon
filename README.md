@@ -2,6 +2,8 @@
 
 ## Installation
 
+### Backend
+
 Install Nest.js
 
 ```sh
@@ -27,8 +29,24 @@ Install dependancies
 
 ```sh
 cd backend
-yarn install
+npm install
 ```
+
+### Frontend
+
+Install Node modules
+
+```sh
+cd backend
+npm install
+```
+
+Start on expo
+
+```sh
+npm run start
+```
+
 
 
 
