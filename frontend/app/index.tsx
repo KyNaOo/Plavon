@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-
+import { Link } from 'expo-router';
 import { Button } from 'react-native-paper';
 
 const index = () => {
@@ -15,9 +15,11 @@ const index = () => {
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
+      <Link href="/login" asChild>
         <Button mode="contained" buttonColor='#EFB4E9' textColor='white' labelStyle={styles.buttonText} style={styles.button}>
           Se connecter
         </Button>
+        </Link>
         <Button mode="contained" buttonColor='white' textColor='#F595F2' labelStyle={styles.buttonText} style={styles.button}>
           S'inscrire
         </Button>
