@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, } from 'react-native';
+import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
+import { AntDesign } from '@expo/vector-icons';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +10,9 @@ const Login = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Link href="/" asChild style={styles.backButton}>
+        <AntDesign name="arrowleft" size={30} color="#F595F2" />
+      </Link>
       <View style={styles.topContainer}>
         <Image
           source={require('../../assets/images/logo-transparent.png')}
@@ -24,7 +29,7 @@ const Login = () => {
           value={email}
           onChangeText={(email) => setEmail(email)}
           style={styles.input}
-          theme={{ roundness: 5 }} // Make the input rounded
+          theme={{ roundness: 10 }} // Make the input rounded
         />
         <TextInput
           label="Mot de passe"
@@ -32,7 +37,7 @@ const Login = () => {
           onChangeText={(mdp) => setMdp(mdp)}
           style={styles.input}
           secureTextEntry
-          theme={{ roundness: 5 }} // Make the input rounded
+          theme={{ roundness: 10 }} // Make the input rounded
         />
       </View>
       <View style={styles.buttonContainer}>
@@ -57,6 +62,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#605790',
     paddingHorizontal: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 25,
+    zIndex: 1,
   },
   topContainer: {
     flex: 1,
@@ -83,7 +94,6 @@ const styles = StyleSheet.create({
   button: {
     width: '90%',
     marginVertical: 15,
-    marginBottom:20
   },
   buttonText: {
     fontFamily: 'PoppinsRegular',
@@ -99,10 +109,11 @@ const styles = StyleSheet.create({
     fontFamily: 'PoppinsRegular',
     color: 'white',
     textAlign: 'center',
+    marginBottom: 20,
   },
   input: {
     width: '80%',
-    marginBottom: 40,
+    marginBottom: 20,
   },
 });
 
