@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 
-export default function Login () {
+export default function LoginScreen () {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
 
