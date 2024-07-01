@@ -1,6 +1,6 @@
 import React from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import {Link, Tabs} from 'expo-router';
+import {Tabs} from 'expo-router';
 import Colors from '@/constants/Colors';
 import {useColorScheme} from '@/components/useColorScheme';
 
