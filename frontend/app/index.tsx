@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     color: '#F595F2',
     textDecorationLine: 'underline',
     fontFamily: 'PoppinsRegular',
+    marginBottom:25
   },
   buttonText: {
     fontFamily: 'PoppinsRegular',
