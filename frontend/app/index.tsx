@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'r
 import { Link } from 'expo-router';
 import { Button } from 'react-native-paper';
 
-const index = () => {
+export default function index () {
   const openmodal = () => {
     // Functionality for opening modal
   };
@@ -68,4 +68,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index;

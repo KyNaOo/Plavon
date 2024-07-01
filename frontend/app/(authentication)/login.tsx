@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 
-const Login = () => {
+export default function Login () {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
 
@@ -117,4 +117,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
