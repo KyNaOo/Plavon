@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import {useRouter} from 'expo-router';
 import {View, Text, StyleSheet, SafeAreaView, Animated} from 'react-native';
 import ScrollView = Animated.ScrollView;
 import { Avatar, Button, List } from 'react-native-paper';
@@ -6,6 +6,10 @@ import TopBar from "@/components/TopBar";
 import Colors from '@/constants/Colors';
 
 export default function SettignsScreen() {
+    const router = useRouter();
+    const navToDetails = () =>{
+        router.navigate('/settings/DetailsProfile');
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -32,7 +36,7 @@ export default function SettignsScreen() {
                         mode="outlined"
                         style={styles.button}
                         labelStyle={styles.buttonText}
-                        onPress={() => {}}
+                        onPress={navToDetails}
                         icon="account"
                     >
                         Information personnelles
@@ -40,9 +44,6 @@ export default function SettignsScreen() {
                 </List.Section>
             </View>
         </ScrollView>
-        // <SafeAreaView style={styles.container}>
-        //     <Text>Settings Page</Text>
-        // </SafeAreaView>
     );
 }
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     separator: {
         width: '60%',
         height: 1,
-        backgroundColor: '#A9A9A9', // Couleur grise foncée
+        backgroundColor: '#A9A9A9',
         marginVertical: 20,
     },
 });
