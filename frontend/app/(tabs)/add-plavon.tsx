@@ -1,10 +1,10 @@
 import { Link } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function MessageScreen() {
+export default function AddPlavonScreen() {
     return (
         <View style={styles.container}>
-            <Text>Massage Page</Text>
+            <Text>Add Plavon page</Text>
         </View>
     );
 }
