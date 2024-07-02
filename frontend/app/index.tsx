@@ -2,15 +2,17 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
 import { Link,useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
-
+import { useRouter } from 'expo-router';
 export default function index () {
   const openmodal = () => {
     // Functionality for opening modal
   };
+
   const router = useRouter();
   const openPrivacyPolicy = () => {
     router.push('/PrivacyPolicy');
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -18,14 +20,28 @@ export default function index () {
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
-      <Link href="/login" asChild>
-        <Button mode="contained" buttonColor='#EFB4E9' textColor='white' labelStyle={styles.buttonText} style={styles.button}>
+      
+        <Button 
+        mode="contained" 
+        buttonColor='#EFB4E9' 
+        textColor='white' 
+        labelStyle={styles.buttonText} 
+        style={styles.button}
+        onPress={()=>router.navigate('/login')}
+        >
           Se connecter
         </Button>
-        </Link>
-        <Button mode="contained" buttonColor='white' textColor='#F595F2' labelStyle={styles.buttonText} style={styles.button}>
+        <Button 
+        mode="contained" 
+        buttonColor='white' 
+        textColor='#F595F2' 
+        labelStyle={styles.buttonText} 
+        style={styles.button} 
+        onPress={()=>router.navigate('/register')}
+        >
           S'inscrire
         </Button>
+      
       </View>
       <TouchableOpacity onPress={openPrivacyPolicy} style={styles.linkContainer}>
         <Text style={styles.linkText}>Politique de confidentialité</Text>
