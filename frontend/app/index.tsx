@@ -1,13 +1,16 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Link } from 'expo-router';
+import { Link,useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
 
 export default function index () {
   const openmodal = () => {
     // Functionality for opening modal
   };
-
+  const router = useRouter();
+  const openPrivacyPolicy = () => {
+    router.push('/PrivacyPolicy');
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -24,7 +27,7 @@ export default function index () {
           S'inscrire
         </Button>
       </View>
-      <TouchableOpacity onPress={openmodal} style={styles.linkContainer}>
+      <TouchableOpacity onPress={openPrivacyPolicy} style={styles.linkContainer}>
         <Text style={styles.linkText}>Politique de confidentialité</Text>
       </TouchableOpacity>
     </SafeAreaView>
