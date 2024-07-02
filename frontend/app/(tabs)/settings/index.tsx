@@ -13,7 +13,6 @@ export default function SettignsScreen() {
 
     return (
         <ScrollView style={styles.container}>
-            <TopBar onBellPress={() => {}} />
             <View style={styles.profileContainer}>
                 <Avatar.Image
                     size={100}
