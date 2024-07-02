@@ -20,9 +20,11 @@ export default function index () {
           Se connecter
         </Button>
         </Link>
+        <Link href="/register" asChild>
         <Button mode="contained" buttonColor='white' textColor='#F595F2' labelStyle={styles.buttonText} style={styles.button}>
           S'inscrire
         </Button>
+        </Link>
       </View>
       <TouchableOpacity onPress={openmodal} style={styles.linkContainer}>
         <Text style={styles.linkText}>Politique de confidentialité</Text>
