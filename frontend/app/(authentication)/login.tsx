@@ -39,6 +39,10 @@ export default function LoginScreen () {
           secureTextEntry
           theme={{ roundness: 10 }} // Make the input rounded
         />
+        <Link href="/register" asChild>
+            <Text style={styles.linkText}>Pas encore de compte?</Text>
+        </Link>
+        
       </View>
       <View style={styles.buttonContainer}>
         <Button
@@ -47,11 +51,12 @@ export default function LoginScreen () {
           labelStyle={styles.buttonText}
           style={styles.button}
           onPress={() => {
-            // Handle login logic
+            console.log(email,mdp)
           }}
         >
           Connexion
         </Button>
+
       </View>
     </SafeAreaView>
   );
@@ -114,6 +119,11 @@ const styles = StyleSheet.create({
   input: {
     width: '80%',
     marginBottom: 20,
+  },
+  linkText: {
+    color: '#F595F2',
+    textDecorationLine: 'underline',
+    fontFamily: 'PoppinsRegular',
   },
 });
 
