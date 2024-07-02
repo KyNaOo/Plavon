@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
@@ -10,54 +10,59 @@ export default function LoginScreen () {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Link href="/" asChild style={styles.backButton}>
-        <AntDesign name="arrowleft" size={30} color="#F595F2" />
-      </Link>
-      <View style={styles.topContainer}>
-        <Image
-          source={require('../../assets/images/logo-transparent.png')}
-          style={styles.image}
-        />
-        <Text style={styles.title}>Connexion</Text>
-        <Text style={styles.description}>
-          Connectez vous à Plavon et planifiez tous vos évènements !
-        </Text>
-      </View>
-      <View style={styles.middleContainer}>
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={(email) => setEmail(email)}
-          style={styles.input}
-          theme={{ roundness: 10 }} // Make the input rounded
-        />
-        <TextInput
-          label="Mot de passe"
-          value={mdp}
-          onChangeText={(mdp) => setMdp(mdp)}
-          style={styles.input}
-          secureTextEntry
-          theme={{ roundness: 10 }} // Make the input rounded
-        />
-        <Link href="/register" asChild>
-            <Text style={styles.linkText}>Pas encore de compte?</Text>
-        </Link>
-        
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="contained"
-          buttonColor="#EFB4E9"
-          labelStyle={styles.buttonText}
-          style={styles.button}
-          onPress={() => {
-            console.log(email,mdp)
-          }}
-        >
-          Connexion
-        </Button>
-
-      </View>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <Link href="/" asChild style={styles.backButton}>
+            <AntDesign name="arrowleft" size={30} color="#F595F2" />
+          </Link>
+          <View style={styles.topContainer}>
+            <Image
+              source={require('../../assets/images/logo-transparent.png')}
+              style={styles.image}
+            />
+            <Text style={styles.title}>Connexion</Text>
+            <Text style={styles.description}>
+              Connectez vous à Plavon et planifiez tous vos évènements !
+            </Text>
+          </View>
+          <View style={styles.middleContainer}>
+            <TextInput
+              label="Email"
+              value={email}
+              onChangeText={(email) => setEmail(email)}
+              style={styles.input}
+              theme={{ roundness: 10 }}
+            />
+            <TextInput
+              label="Mot de passe"
+              value={mdp}
+              onChangeText={(mdp) => setMdp(mdp)}
+              style={styles.input}
+              secureTextEntry
+              theme={{ roundness: 10 }}
+            />
+            <Link href="/register" asChild>
+              <Text style={styles.linkText}>Pas encore de compte?</Text>
+            </Link>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              mode="contained"
+              buttonColor="#EFB4E9"
+              labelStyle={styles.buttonText}
+              style={styles.button}
+              onPress={() => {
+                console.log(email,mdp)
+              }}
+            >
+              Connexion
+            </Button>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -66,6 +71,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#605790',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
     paddingHorizontal: 20,
   },
   backButton: {
@@ -75,15 +86,14 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   topContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 70, // Adjust padding to move content closer to the top
+    paddingTop: 70,
   },
   middleContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 20,
   },
   image: {
     width: 150,
@@ -94,7 +104,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    paddingBottom: 20, // Ensure button is at the bottom
+    paddingBottom: 20,
+    marginTop: 20,
   },
   button: {
     width: '90%',
@@ -126,4 +137,3 @@ const styles = StyleSheet.create({
     fontFamily: 'PoppinsRegular',
   },
 });
-
