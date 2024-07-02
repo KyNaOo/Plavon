@@ -1,12 +1,26 @@
 import React from 'react';
 import { Link } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 
-const BackButton = () => {
+interface BackButtonProps {
+  href: string;
+  color?: string;
+  size?: number;
+  iconName?: keyof typeof AntDesign.glyphMap;
+  style?: ViewStyle;
+}
+
+const BackButton: React.FC<BackButtonProps> = ({
+  href,
+  color = '#F595F2',
+  size = 30,
+  iconName = 'arrowleft',
+  style,
+}) => {
   return (
-    <Link href={'/'} asChild style={styles.backButton}>
-      <AntDesign name="arrowleft" size={30} color="#F595F2" />
+    <Link href={href} asChild style={[styles.backButton, style]}>
+      <AntDesign name={iconName} size={size} color={color} />
     </Link>
   );
 };

@@ -15,7 +15,7 @@ export default function LoginScreen () {
         style={styles.keyboardAvoidingView}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <BackButton/>
+          <BackButton href='/'/>
           <View style={styles.topContainer}>
             <Image
               source={require('../../assets/images/logo-transparent.png')}
