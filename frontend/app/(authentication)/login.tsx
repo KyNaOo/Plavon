@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
-import BackButton from '../backButton';
+import BackButton from '@/components/backButton';
+import Colors from '@/constants/Colors';
 
 export default function LoginScreen () {
   const [email, setEmail] = useState('');
@@ -18,7 +19,7 @@ export default function LoginScreen () {
           <BackButton href='/'/>
           <View style={styles.topContainer}>
             <Image
-              source={require('../../assets/images/logo-transparent.png')}
+              source={require('@/assets/images/logo-transparent.png')}
               style={styles.image}
             />
             <Text style={styles.title}>Connexion</Text>
@@ -68,7 +69,7 @@ export default function LoginScreen () {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#605790',
+    backgroundColor: Colors.light.purpleBackground,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'PoppinsRegular',
     fontSize: 45,
-    color: '#F595F2',
+    color: Colors.light.itemBackground,
   },
   description: {
     fontFamily: 'PoppinsRegular',
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   linkText: {
-    color: '#F595F2',
+    color: Colors.light.itemBackground,
     textDecorationLine: 'underline',
     fontFamily: 'PoppinsRegular',
   },

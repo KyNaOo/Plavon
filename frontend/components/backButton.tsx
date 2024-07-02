@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
 import { StyleSheet, ViewStyle } from 'react-native';
+import Colors from '@/constants/Colors';
 
 interface BackButtonProps {
   href: string;
@@ -13,7 +14,7 @@ interface BackButtonProps {
 
 const BackButton: React.FC<BackButtonProps> = ({
   href,
-  color = '#F595F2',
+  color = Colors.light.itemBackground,
   size = 30,
   iconName = 'arrowleft',
   style,
