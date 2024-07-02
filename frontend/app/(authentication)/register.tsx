@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
-import { AntDesign } from '@expo/vector-icons';
+import BackButton from '../backButton';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -16,9 +16,7 @@ export default function RegisterScreen() {
         style={styles.keyboardAvoidingView}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <Link href="/" asChild style={styles.backButton}>
-            <AntDesign name="arrowleft" size={30} color="#F595F2" />
-          </Link>
+         <BackButton/>
           <View style={styles.topContainer}>
             <Image
               source={require('../../assets/images/logo-transparent.png')}
