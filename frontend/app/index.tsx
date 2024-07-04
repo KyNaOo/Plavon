@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'r
 import { Link } from 'expo-router';
 import { Button } from 'react-native-paper';
 
-export default function index () {
+export default function index() {
   const openmodal = () => {
     // Functionality for opening modal
   };
@@ -15,10 +15,10 @@ export default function index () {
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
-      <Link href="/login" asChild>
-        <Button mode="contained" buttonColor='#EFB4E9' textColor='white' labelStyle={styles.buttonText} style={styles.button}>
-          Se connecter
-        </Button>
+        <Link href="/home" asChild>
+          <Button mode="contained" buttonColor='#EFB4E9' textColor='white' labelStyle={styles.buttonText} style={styles.button}>
+            Se connecter
+          </Button>
         </Link>
         <Button mode="contained" buttonColor='white' textColor='#F595F2' labelStyle={styles.buttonText} style={styles.button}>
           S'inscrire
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     color: '#F595F2',
     textDecorationLine: 'underline',
     fontFamily: 'PoppinsRegular',
-    marginBottom:25
+    marginBottom: 25
   },
   buttonText: {
     fontFamily: 'PoppinsRegular',
