@@ -1,10 +1,28 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
-import { Button, TextInput, Searchbar } from 'react-native-paper';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
+import { Button, TextInput, Searchbar, Chip } from 'react-native-paper';
+
+const randomNames = ['Alice', 'Bob', 'Charlie', 'David', 'Emma', 'Frank', 'Grace', 'Henry'];
 
 export default function createGroup() {
-  const [groupName, setGroupName] = React.useState("");
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [groupName, setGroupName] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [selectedNames, setSelectedNames] = useState([]);
+
+  const filteredNames = randomNames.filter(name => 
+    name.toLowerCase().includes(searchQuery.toLowerCase()) && !selectedNames.includes(name)
+  );
+
+  const handleNameSelect = (name) => {
+    setSelectedNames([...selectedNames, name]);
+    setSearchQuery('');
+    setIsSearchFocused(false);
+  };
+
+  const handleRemoveName = (name) => {
+    setSelectedNames(selectedNames.filter(n => n !== name));
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -15,11 +33,36 @@ export default function createGroup() {
           onChangeText={text => setGroupName(text)}
           style={styles.textInput}
         />
-    <Searchbar
-      placeholder="Cherche tes amis"
-      onChangeText={setSearchQuery}
-      value={searchQuery}
-    />
+        <View style={styles.chipContainer}>
+          {selectedNames.map(name => (
+            <Chip 
+              key={name} 
+              onClose={() => handleRemoveName(name)}
+              style={styles.chip}
+            >
+              {name}
+            </Chip>
+          ))}
+        </View>
+        <Searchbar
+          placeholder="Cherche tes amis"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          onFocus={() => setIsSearchFocused(true)}
+          style={styles.searchBar}
+        />
+        {isSearchFocused && searchQuery && (
+          <FlatList
+            data={filteredNames}
+            renderItem={({item}) => (
+              <TouchableOpacity onPress={() => handleNameSelect(item)} style={styles.nameItem}>
+                <Button>{item}</Button>
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item}
+            style={styles.nameList}
+          />
+        )}
       </View>
       <View style={styles.buttonContainer}>
         <Button 
@@ -44,10 +87,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   inputContainer: {
-    marginTop: '45%', // Adjust this value to move inputs further down
+    marginTop: '45%',
   },
   textInput: {
     marginBottom: 20,
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
+  chip: {
+    margin: 4,
+  },
+  searchBar: {
+    marginBottom: 10,
+  },
+  nameList: {
+    maxHeight: 200,
+    backgroundColor: 'white',
+  },
+  nameItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
   buttonContainer: {
     position: 'absolute',
