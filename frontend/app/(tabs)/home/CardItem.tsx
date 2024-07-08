@@ -10,14 +10,24 @@ type CardItemProps = {
 };
 
 
+
+
+
 const getRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
+  const letters = ['FBA5A0', 'FFA0B5', 'FFE3D8', '0C6E74 ', 'd196a2', 'bfaccd', 'bfaccd'];
+
+  const randomIndex = Math.floor(Math.random() * letters.length);
+
+  const color = '#' + letters[randomIndex];
+
   return color;
 };
+
+
+
+
+
+
 
 const CardItem: React.FC<CardItemProps> = ({ title, startTime, endTime }) => {
 

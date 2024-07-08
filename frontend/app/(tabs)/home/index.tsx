@@ -8,11 +8,11 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.boxButton}>
-                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#E6E6FA', }}>
+                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#8DE3DF', }}>
                     <Text style={{ fontWeight: 'bold', color: 'black' }}>Aujourd'hui</Text>
 
                 </Button>
-                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#E6E6FA' }}>
+                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#8DE3DF' }}>
                     <Text style={{ fontWeight: 'bold', color: 'black' }}>Calendrier</Text>
                 </Button>
                 <IconButton
@@ -21,7 +21,7 @@ export default function HomeScreen() {
                     size={20}
                     onPress={() => console.log('Pressed')}
                     mode='contained'
-                    containerColor='#E6E6FA'
+                    containerColor='#8DE3DF'
                     style={{ alignSelf: 'center', marginLeft: 'auto', margin: 10 }}
                 />
             </View>
@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
     modal: {
 
 
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#D3D3D3 ',
 
 
     },
     txt: {
 
-        backgroundColor: '#F595F2',
+        backgroundColor: '#F3508E',
         height: 50,
         display: 'flex',
         justifyContent: 'center',
