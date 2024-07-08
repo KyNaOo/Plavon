@@ -2,7 +2,6 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
 import { Link,useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
-import { useRouter } from 'expo-router';
 export default function index () {
   const openmodal = () => {
     // Functionality for opening modal
