@@ -176,7 +176,6 @@ export default function DetailsProfile() {
                             onFocus={handleFocus}
                         />
 
-                    <ScrollView>
                     <View style={styles.searchResultsContainer}>
                         {filteredInterests.map((interest, index) => (
                             <Chip
@@ -189,7 +188,6 @@ export default function DetailsProfile() {
                             </Chip>
                         ))}
                     </View>
-                    </ScrollView>
                     </ScrollView>
                     </KeyboardAvoidingView>
                 </CustomModal>

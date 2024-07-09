@@ -35,6 +35,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, t
                     <View style={styles.modalHeader}>
                         <IconButton icon="close" size={24} onPress={onClose} />
                     </View>
+                    <Text style={styles.modalTitle}>{title}</Text>
                     <KeyboardAwareScrollView
                         contentContainerStyle={styles.modalContentContainer}
                         enableOnAndroid={true}
@@ -42,7 +43,6 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, t
                         keyboardShouldPersistTaps="always"
                         keyboardDismissMode="none"
                     >
-                        <Text style={styles.modalTitle}>{title}</Text>
                         {children}
                     </KeyboardAwareScrollView>
                 </View>
@@ -82,9 +82,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     modalTitle: {
+        marginTop: 20,
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 20,
         alignSelf: 'center',
     },
 });
