@@ -8,19 +8,19 @@ export default function createGroup() {
   const [groupName, setGroupName] = useState("");
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [selectedNames, setSelectedNames] = useState([]);
+  const [selectedNames, setSelectedNames] = useState(['']);
 
   const filteredNames = randomNames.filter(name => 
     name.toLowerCase().includes(searchQuery.toLowerCase()) && !selectedNames.includes(name)
   );
 
-  const handleNameSelect = (name) => {
+  const handleNameSelect = (name : string) => {
     setSelectedNames([...selectedNames, name]);
     setSearchQuery('');
     setIsSearchFocused(false);
   };
 
-  const handleRemoveName = (name) => {
+  const handleRemoveName = (name : string) => {
     setSelectedNames(selectedNames.filter(n => n !== name));
   };
 
