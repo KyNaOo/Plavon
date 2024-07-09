@@ -8,13 +8,14 @@ import {
     TextInput,
     KeyboardAvoidingView, Platform
 } from 'react-native';
-import {Avatar, Chip, IconButton} from 'react-native-paper';
+import {Avatar, Chip, IconButton, Searchbar} from 'react-native-paper';
 import Colors from '@/constants/Colors';
 import TopBar from "@/components/TopBar";
 import ScrollView = Animated.ScrollView;
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {router} from "expo-router";
 import CustomModal from "@/components/Modal";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 export default function DetailsProfile() {
     const [isEditingBio, setIsEditingBio] = useState(false);
@@ -23,10 +24,31 @@ export default function DetailsProfile() {
     const [selectedInterests, setSelectedInterests] = useState(['Basket', 'Cinéma', 'Football', 'Billard']);
     const [availableInterests, setAvailableInterests] = useState(['Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage']);
     const [displayedInterests, setDisplayedInterests] = useState(selectedInterests);
-
+    const scrollRef = useRef<KeyboardAwareScrollView>(null);
+    const searchInputRef = useRef<TextInput>(null)
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredInterests, setFilteredInterests] = useState(availableInterests);
+    const onChangeSearch = (query: string) => {
+        setSearchQuery(query);
+        if (query === '') {
+            setFilteredInterests(availableInterests);
+        } else {
+            setFilteredInterests(
+                availableInterests.filter((interest) =>
+                    interest.toLowerCase().includes(query.toLowerCase())
+                )
+            );
+        }
+    };
     const removeInterest = (interest: string) => {
         setSelectedInterests(selectedInterests.filter(item => item !== interest));
         setAvailableInterests([...availableInterests, interest]);
+    };
+
+    const handleFocus = () => {
+        if (scrollRef.current && searchInputRef.current) {
+            scrollRef.current.scrollToFocusedInput(searchInputRef.current, 0);
+        }
     };
 
     const addInterest = (interest: string) => {
@@ -34,8 +56,11 @@ export default function DetailsProfile() {
             alert('Vous ne pouvez pas ajouter plus de 6 centres d’intérêt.');
             return;
         }
-        setAvailableInterests(availableInterests.filter(item => item !== interest));
-        setSelectedInterests([...selectedInterests, interest]);
+        if (!selectedInterests.includes(interest)) {
+            setAvailableInterests(availableInterests.filter(item => item !== interest));
+            setSelectedInterests([...selectedInterests, interest]);
+            setFilteredInterests(filteredInterests.filter(item => item !== interest));
+        }
     };
 
     const handleCloseModal = () => {
@@ -76,7 +101,15 @@ export default function DetailsProfile() {
                         </View>
                     </View>
                     <TouchableOpacity style={styles.bioContainer} onPress={() => setIsEditingBio(true)}>
+                        <View style={styles.bioHeader}>
                         <Text style={styles.bioTitle}>BIO</Text>
+                            <IconButton
+                                icon="pencil"
+                                size={20}
+                                onPress={() => setIsEditingBio(true)}
+                                style={styles.bioIcon}
+                            />
+                        </View>
                         {isEditingBio ? (
                             <TextInput
                                 style={styles.bioText}
@@ -109,12 +142,20 @@ export default function DetailsProfile() {
                         ))}
                     </View>
                 </View>
-
+                {isModalVisible && <View style={styles.modalOverlay} />}
                 <CustomModal
                     visible={isModalVisible}
                     onClose={handleCloseModal}
                     title="Vos centres d’intérêt"
                 >
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        style={styles.keyboardAvoidingView}
+                    >
+                    <ScrollView
+                        contentContainerStyle={styles.modalScrollViewContent}
+                        // keyboardShouldPersistTaps="handled"
+                        >
                     <View style={styles.modalChipsContainer}>
                         {selectedInterests.map((interest, index) => (
                             <Chip
@@ -126,13 +167,18 @@ export default function DetailsProfile() {
                             </Chip>
                         ))}
                     </View>
-                    <TextInput
-                        placeholder="Rechercher un centre d’intérêt"
-                        style={styles.searchInput}
-                    />
+                        <Searchbar
+                            placeholder="Rechercher un centre d’intérêt"
+                            style={styles.searchInput}
+                            value={searchQuery}
+                            onChangeText={onChangeSearch}
+                            ref={searchInputRef}
+                            onFocus={handleFocus}
+                        />
+
                     <ScrollView>
                     <View style={styles.searchResultsContainer}>
-                        {availableInterests.map((interest, index) => (
+                        {filteredInterests.map((interest, index) => (
                             <Chip
                                 key={index}
                                 style={styles.chip}
@@ -144,6 +190,8 @@ export default function DetailsProfile() {
                         ))}
                     </View>
                     </ScrollView>
+                    </ScrollView>
+                    </KeyboardAvoidingView>
                 </CustomModal>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -154,6 +202,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    modalOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     header: {
         backgroundColor: '#FFB6C1',
@@ -260,7 +312,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '90%',
-        marginBottom: 10, // Ajouter un peu d'espace sous le header
+        marginBottom: 10,
     },
     modalContent: {
         alignItems: 'center',
@@ -278,18 +330,33 @@ const styles = StyleSheet.create({
         margin: 4,
     },
     searchInput: {
-        width: '90%',
-        padding: 10,
-        borderRadius: 5,
-        backgroundColor: '#f0f0f0',
+        width: '100%',
+        backgroundColor: '#fff',
         marginBottom: 20,
     },
     searchResultsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        marginBottom: 24,
     },
     searchResultChip: {
         margin: 4,
+    },
+    modalScrollViewContent: {
+        paddingBottom: 20,
+    },
+    keyboardAvoidingView: {
+        flex: 1,
+    },
+    bioIcon: {
+        margin: 0,
+    },
+    bioHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
 });

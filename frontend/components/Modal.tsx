@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import ScrollView = Animated.ScrollView;
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 interface CustomModalProps {
     visible: boolean;
@@ -23,22 +24,27 @@ interface CustomModalProps {
 
 const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, title }) => {
     return (
-
         <RNModal
             animationType="slide"
             transparent={true}
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={styles.modalOverlay}>
+            <View style={styles.overlayContainer}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalHeader}>
                         <IconButton icon="close" size={24} onPress={onClose} />
                     </View>
-                    <View style={styles.modalContentContainer}>
+                    <KeyboardAwareScrollView
+                        contentContainerStyle={styles.modalContentContainer}
+                        enableOnAndroid={true}
+                        extraScrollHeight={100}
+                        keyboardShouldPersistTaps="always"
+                        keyboardDismissMode="none"
+                    >
                         <Text style={styles.modalTitle}>{title}</Text>
                         {children}
-                    </View>
+                    </KeyboardAwareScrollView>
                 </View>
             </View>
         </RNModal>
@@ -46,11 +52,13 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, t
 };
 
 const styles = StyleSheet.create({
-    modalOverlay: {
+    overlayContainer: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
         width: '100%',
