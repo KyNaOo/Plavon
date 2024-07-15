@@ -1,9 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Interest } from '../../interest/entities/interest.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ length: 256 })
   firstName: string;
@@ -16,4 +23,21 @@ export class User {
 
   @Column({ length: 64 })
   password: string;
+
+  @Column({ length: 64 })
+  bio: string;
+
+  @ManyToMany(() => Interest)
+  @JoinTable({
+    name: 'user_interest',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'interest_id',
+      referencedColumnName: 'id',
+    },
+  })
+  interests: Interest[];
 }
