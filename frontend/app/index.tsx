@@ -2,7 +2,9 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
 import { Link,useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
+
 export default function index () {
+
   const openmodal = () => {
     // Functionality for opening modal
   };
@@ -19,6 +21,7 @@ export default function index () {
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
+
       
         <Button 
         mode="contained" 
@@ -38,6 +41,7 @@ export default function index () {
         style={styles.button} 
         onPress={()=>router.navigate('/register')}
         >
+
           S'inscrire
         </Button>
       
@@ -78,7 +82,7 @@ const styles = StyleSheet.create({
     color: '#F595F2',
     textDecorationLine: 'underline',
     fontFamily: 'PoppinsRegular',
-    marginBottom:25
+    marginBottom: 25
   },
   buttonText: {
     fontFamily: 'PoppinsRegular',
