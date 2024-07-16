@@ -1,38 +1,42 @@
-import {
-  WebSocketGateway,
-  SubscribeMessage,
-  MessageBody,
-} from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
+import { Socket } from 'socket.io';
 import { GroupsService } from './groups.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 
 @WebSocketGateway()
 export class GroupsGateway {
-  constructor(private readonly groupsService: GroupsService) {}
+    constructor(private readonly groupsService: GroupsService) { }
 
-  @SubscribeMessage('createGroup')
-  create(@MessageBody() createGroupDto: CreateGroupDto) {
-    return this.groupsService.create(createGroupDto);
-  }
+    @SubscribeMessage('createGroup')
+    async handleCreateGroup(client: Socket, createGroupDto: CreateGroupDto) {
+        const group = this.groupsService.create(createGroupDto);
+        client.emit('groupCreated', group);
+    }
 
-  @SubscribeMessage('findAllGroups')
-  findAll() {
-    return this.groupsService.findAll();
-  }
+    @SubscribeMessage('joinGroup')
+    async handleJoinGroup(client: Socket, room: string) {
+        client.join(room);
+    }
 
-  @SubscribeMessage('findOneGroup')
-  findOne(@MessageBody() id: number) {
-    return this.groupsService.findOne(id);
-  }
+    @SubscribeMessage('leaveGroup')
+    async handleLeaveGroup(client: Socket, room: string) {
+        client.leave(room);
+    }
 
-  @SubscribeMessage('updateGroup')
-  update(@MessageBody() updateGroupDto: UpdateGroupDto) {
-    return this.groupsService.update(updateGroupDto.id, updateGroupDto);
-  }
 
-  @SubscribeMessage('removeGroup')
-  remove(@MessageBody() id: number) {
-    return this.groupsService.remove(id);
-  }
+    @SubscribeMessage('updateGroup')
+    async handleUpdateGroup(client: Socket, updateGroupDto: UpdateGroupDto) {
+        // TODO
+    }
+
+    @SubscribeMessage('getUserGroups')
+    async handleGetUserGroups(client: Socket) {
+        // TODO
+    }
+
+    @SubscribeMessage('deleteGroup')
+    async handleDeleteGroup(client: Socket, groupId: number) {
+        // TODO
+    }
 }
