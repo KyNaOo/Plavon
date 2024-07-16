@@ -30,7 +30,7 @@ export class UserController {
     return this.userService.findOneById(id);
   }
 
-  @Get(':email')
+  @Get('/email/:email')
   findOne(@Param('email') email: string) {
     return this.userService.findOneByEmail(email);
   }
