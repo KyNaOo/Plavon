@@ -6,6 +6,7 @@ export default {
         textDisabledColor: '#777',
         white: '#fff',
         background: '#fff',
+        purpleBackground:'#605790'
     },
     dark: {
         text: '#FFF',

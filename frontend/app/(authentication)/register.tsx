@@ -5,9 +5,10 @@ import { Button, TextInput } from 'react-native-paper';
 import BackButton from '@/components/backButton';
 import Colors from '@/constants/Colors';
 
-export default function LoginScreen () {
+export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
+  const [confMdp, setConfMdp] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -16,15 +17,15 @@ export default function LoginScreen () {
         style={styles.keyboardAvoidingView}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <BackButton href='/'/>
+         <BackButton href='/'/>
           <View style={styles.topContainer}>
             <Image
               source={require('@/assets/images/logo-transparent.png')}
               style={styles.image}
             />
-            <Text style={styles.title}>Connexion</Text>
+            <Text style={styles.title}>Inscription</Text>
             <Text style={styles.description}>
-              Connectez vous à Plavon et planifiez tous vos évènements !
+              Inscrivez vous afin de pouvoir changer le cours de vos évènements !
             </Text>
           </View>
           <View style={styles.middleContainer}>
@@ -43,8 +44,16 @@ export default function LoginScreen () {
               secureTextEntry
               theme={{ roundness: 10 }}
             />
-            <Link href="/register" asChild>
-              <Text style={styles.linkText}>Pas encore de compte?</Text>
+            <TextInput
+              label="Confirmer le mot de passe"
+              value={confMdp}
+              onChangeText={(confMdp) => setConfMdp(confMdp)}
+              style={styles.input}
+              secureTextEntry
+              theme={{ roundness: 10 }}
+            />
+            <Link href="/login" asChild>
+              <Text style={styles.linkText}>Vous avez déjà un compte?</Text>
             </Link>
           </View>
           <View style={styles.buttonContainer}>
@@ -54,10 +63,10 @@ export default function LoginScreen () {
               labelStyle={styles.buttonText}
               style={styles.button}
               onPress={() => {
-                console.log(email,mdp)
+                console.log(email, mdp, confMdp)
               }}
             >
-              Connexion
+              S'inscrire
             </Button>
           </View>
         </ScrollView>
