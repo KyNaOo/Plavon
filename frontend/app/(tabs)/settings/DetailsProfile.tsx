@@ -149,8 +149,9 @@ export default function DetailsProfile() {
                     title="Vos centres d’intérêt"
                 >
                     <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        behavior={Platform.OS === 'ios'||'android' ? 'padding' : 'height'}
                         style={styles.keyboardAvoidingView}
+                        keyboardVerticalOffset={Platform.select({ios: 0, android: 200})}
                     >
                     <ScrollView
                         contentContainerStyle={styles.modalScrollViewContent}
