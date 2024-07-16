@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { View, Text, StyleSheet, ScrollViewComponent, ScrollView } from 'react-native';
 import { Avatar, Button, Card, IconButton, } from 'react-native-paper';
 import DayComponent from './Date';
@@ -8,11 +8,12 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.boxButton}>
-                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#8DE3DF', }}>
+                <Button compact mode="outlined" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: 'white', borderColor: 'black', borderWidth: 1, }}>
                     <Text style={{ fontWeight: 'bold', color: 'black' }}>Aujourd'hui</Text>
 
                 </Button>
-                <Button compact mode="contained" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: '#8DE3DF' }}>
+
+                <Button compact mode="outlined" onPress={() => router.navigate('/home/calendar')} style={{ margin: 10, width: 100, backgroundColor: 'white', borderColor: 'black', borderWidth: 1 }}>
                     <Text style={{ fontWeight: 'bold', color: 'black' }}>Calendrier</Text>
                 </Button>
                 <IconButton
@@ -20,17 +21,18 @@ export default function HomeScreen() {
                     iconColor={'black'}
                     size={20}
                     onPress={() => console.log('Pressed')}
-                    mode='contained'
-                    containerColor='#8DE3DF'
+                    mode='outlined'
+                    containerColor='white'
+
                     style={{ alignSelf: 'center', marginLeft: 'auto', margin: 10 }}
                 />
-            </View>
+            </View >
 
             <DayComponent />
             <DateMoi />
 
             <View style={styles.txt}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>Tes Plavons audj</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>Mes Plavons audj</Text>
             </View>
 
             <ScrollView style={styles.modal} >
@@ -68,7 +70,9 @@ const styles = StyleSheet.create({
     },
     txt: {
 
-        backgroundColor: '#F3508E',
+        borderWidth: 2,
+        borderColor: 'black',
+
         height: 50,
         display: 'flex',
         justifyContent: 'center',
@@ -77,6 +81,7 @@ const styles = StyleSheet.create({
         left: 0,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
+
 
 
 
