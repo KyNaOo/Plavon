@@ -11,11 +11,11 @@ const TopBar: React.FC<TopBarProps> = ({ onBellPress }) => {
     return (
         <Appbar.Header style={styles.header}>
             <View style={styles.logoContainer}>
-            <Image
-                source={require('../assets/images/WhiteLogoTransparent.png')}
-                style={styles.logo}
-                resizeMode="contain"
-            />
+                <Image
+                    source={require('../assets/images/WhiteLogoTransparent.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
             </View>
             {/*<Appbar.Content  title={}/>*/}
             <Appbar.Action icon="bell" color={'white'} onPress={onBellPress} />
@@ -25,7 +25,7 @@ const TopBar: React.FC<TopBarProps> = ({ onBellPress }) => {
 
 const styles = StyleSheet.create({
     header: {
-        backgroundColor: Colors.light.itemBackground,
+        backgroundColor: Colors.light.topBarColor,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

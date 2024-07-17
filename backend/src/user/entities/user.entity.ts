@@ -1,17 +1,16 @@
 import {
   Column,
   Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
+  JoinTable,
   ManyToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Message } from 'src/message/entities/message.entity';
-import { Group } from 'src/groups/entities/group.entity';
+import { Interest } from '../../interest/entities/interest.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id_user: number;
+  id: string;
 
   @Column({ length: 256 })
   firstName: string;
@@ -19,18 +18,26 @@ export class User {
   @Column({ length: 256 })
   lastName: string;
 
-  @Column({ length: 64, unique: true })
+  @Column({ length: 64 })
   email: string;
 
   @Column({ length: 64 })
   password: string;
 
-  @Column('text', { nullable: true })
+  @Column({ length: 64 })
   bio: string;
 
-  @OneToMany(() => Message, (message) => message.user)
-  messages: Message[];
-
-  @ManyToMany(() => Group, (group) => group.members)
-  groups: Group[];
+  @ManyToMany(() => Interest)
+  @JoinTable({
+    name: 'user_interest',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'interest_id',
+      referencedColumnName: 'id',
+    },
+  })
+  interests: Interest[];
 }
