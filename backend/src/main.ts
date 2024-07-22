@@ -20,7 +20,6 @@ const swaggerConfig = new DocumentBuilder()
   .setTitle('Plavon API')
   .setDescription('The Plavon API description')
   .setVersion('1.0')
-  .addTag('plavon')
   .build();
 
 async function bootstrap() {
