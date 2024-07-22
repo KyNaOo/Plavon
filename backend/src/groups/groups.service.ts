@@ -116,7 +116,6 @@ export class GroupsService {
     return group;
   }
   async findByUser(userId: string) {
-
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
