@@ -4,16 +4,13 @@ import {
     Text,
     StyleSheet,
     Modal as RNModal,
-    TouchableOpacity,
-    ViewStyle,
-    TextStyle,
-    Animated,
     Platform,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    Keyboard,
+    StatusBar,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import ScrollView = Animated.ScrollView;
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 interface CustomModalProps {
     visible: boolean;
@@ -25,67 +22,60 @@ interface CustomModalProps {
 const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, title }) => {
     return (
         <RNModal
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={styles.overlayContainer}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <IconButton icon="close" size={24} onPress={onClose} />
-                    </View>
-                    <Text style={styles.modalTitle}>{title}</Text>
-                    <KeyboardAwareScrollView
-                        contentContainerStyle={styles.modalContentContainer}
-                        enableOnAndroid={true}
-                        extraScrollHeight={100}
-                        keyboardShouldPersistTaps="always"
-                        keyboardDismissMode="none"
-                    >
-                        {children}
-                    </KeyboardAwareScrollView>
+            <StatusBar backgroundColor="rgba(0, 0, 0, 0.5)" translucent />
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.overlay}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <KeyboardAvoidingView 
+                            behavior={Platform.OS === "ios" ? "padding" : "height"}
+                            style={styles.modalContainer}
+                        >
+                            <View style={styles.modalContent}>
+                                <View style={styles.modalHeader}>
+                                    <Text style={styles.modalTitle}>{title}</Text>
+                                    <IconButton icon="close" size={24} onPress={onClose} />
+                                </View>
+                                {children}
+                            </View>
+                        </KeyboardAvoidingView>
+                    </TouchableWithoutFeedback>
                 </View>
-            </View>
+            </TouchableWithoutFeedback>
         </RNModal>
     );
 };
 
 const styles = StyleSheet.create({
-    overlayContainer: {
+    overlay: {
         flex: 1,
-        justifyContent: 'flex-end',
-    },
-    modalOverlay: {
-        ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
     },
     modalContainer: {
         width: '100%',
         height: '75%',
+    },
+    modalContent: {
         backgroundColor: '#E6DEFF',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-    },
-    modalContentContainer: {
         padding: 20,
-        flex: 1,
+        height: '100%',
     },
     modalHeader: {
-        height: 40,
-        backgroundColor: '#fff',
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        paddingHorizontal: 10,
+        marginBottom: 20,
     },
     modalTitle: {
-        marginTop: 20,
         fontSize: 18,
         fontWeight: 'bold',
-        alignSelf: 'center',
     },
 });
 
