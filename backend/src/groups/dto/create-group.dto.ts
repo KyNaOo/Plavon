@@ -5,5 +5,5 @@ export class CreateGroupDto {
   readonly name: string;
 
   @IsUUID()
-  readonly creatorId: number;
+  readonly creatorId: string;
 }

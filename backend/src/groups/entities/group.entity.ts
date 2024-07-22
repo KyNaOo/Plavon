@@ -7,13 +7,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Message } from 'src/message/entities/message.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Message } from '../../message/entities/message.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Group {
-  @PrimaryGeneratedColumn()
-  id_group: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   name: string;
@@ -23,6 +23,9 @@ export class Group {
 
   @ManyToMany(() => User, (user) => user.groups)
   members: User[];
+
+  @Column('uuid')
+  creatorId: string;
 
   @CreateDateColumn()
   createdAt: Date;
