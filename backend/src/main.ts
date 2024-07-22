@@ -32,7 +32,9 @@ async function bootstrap() {
   const BACKEND_PORT = process.env.BACKEND_PORT ?? 3000;
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document, {
+    jsonDocumentUrl: 'swagger/json',
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
