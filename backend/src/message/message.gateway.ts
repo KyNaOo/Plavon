@@ -2,37 +2,91 @@ import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
+  WebSocketServer,
+  OnGatewayInit,
+  OnGatewayDisconnect,
+  OnGatewayConnection,
+  ConnectedSocket,
 } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { MessageIdDto } from './dto/message-id.dto';
+import { Logger } from '@nestjs/common';
 
-@WebSocketGateway()
-export class MessageGateway {
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+export class MessageGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  @WebSocketServer()
+  private readonly server: Server;
+  private readonly logger = new Logger(MessageGateway.name);
+
   constructor(private readonly messageService: MessageService) {}
 
+  afterInit() {
+    this.logger.log('Initialized');
+  }
+
+  handleConnection(client: Socket) {
+    const { sockets } = this.server.sockets;
+    this.logger.log(`Client id: ${client.id} connected`);
+    this.logger.debug(`Number of connected clients: ${sockets.size}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    const { sockets } = this.server.sockets;
+    this.logger.log(`Client id: ${client.id} disconnected`);
+    this.logger.debug(`Number of connected clients: ${sockets.size}`);
+  }
+
   @SubscribeMessage('createMessage')
-  create(@MessageBody() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  /**
+   * Creates a new message using the provided data and emits an event to notify
+   * all clients in the specified group that a new message has been created.
+   *
+   * @param {CreateMessageDto} data - The data used to create the message.
+   * @return {Promise<void>} A promise that resolves when the message has been created
+   * and the event has been emitted.
+   */
+  async create(@MessageBody() data: CreateMessageDto) {
+    const { groupId, message } = await this.messageService.create(data);
+
+    this.server.of(groupId).emit('messageCreated', message);
   }
 
   @SubscribeMessage('findAllMessage')
-  findAll() {
-    return this.messageService.findAll();
+  findAll(@ConnectedSocket() client: Socket) {
+    const messages = this.messageService.findAll();
+
+    client.emit('allMessages', messages);
   }
 
   @SubscribeMessage('findOneMessage')
-  findOne(@MessageBody() id: number) {
-    return this.messageService.findOne(id);
+  findOne(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: MessageIdDto,
+  ) {
+    const message = this.messageService.findOne(data.id);
+    client.emit('message', message);
   }
 
   @SubscribeMessage('updateMessage')
-  update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(updateMessageDto.id, updateMessageDto);
+  async update(@MessageBody() data: UpdateMessageDto) {
+    const { groupId, message } = await this.messageService.update(data);
+
+    this.server.of(groupId).emit('messageUpdated', message);
   }
 
   @SubscribeMessage('removeMessage')
-  remove(@MessageBody() id: number) {
-    return this.messageService.remove(id);
+  async remove(@MessageBody() data: MessageIdDto) {
+    const { groupId, message } = await this.messageService.remove(data.id);
+
+    this.server.of(groupId).emit('messageRemoved', message);
   }
 }
