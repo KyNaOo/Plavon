@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import * as fs from 'node:fs';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 config();
 
@@ -15,6 +16,13 @@ const httpsOptions = {
   cert: fs.readFileSync('./secrets/cert.crt'),
 };
 
+const swaggerConfig = new DocumentBuilder()
+  .setTitle('Plavon API')
+  .setDescription('The Plavon API description')
+  .setVersion('1.0')
+  .addTag('plavon')
+  .build();
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     httpsOptions,
@@ -22,6 +30,9 @@ async function bootstrap() {
 
   const logger = new Logger('Bootstrap');
   const BACKEND_PORT = process.env.BACKEND_PORT ?? 3000;
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(
     new ValidationPipe({
