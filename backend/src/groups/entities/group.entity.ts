@@ -6,6 +6,7 @@ import {
   ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinTable,
 } from 'typeorm';
 import { Message } from '../../message/entities/message.entity';
 import { User } from '../../user/entities/user.entity';
@@ -22,6 +23,17 @@ export class Group {
   messages: Message[];
 
   @ManyToMany(() => User, (user) => user.groups)
+  @JoinTable({
+    name: 'group_members',
+    joinColumn: {
+      name: 'group_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+  })
   members: User[];
 
   @Column('uuid')

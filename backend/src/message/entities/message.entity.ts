@@ -5,13 +5,13 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { Group } from 'src/groups/entities/group.entity';
+import { User } from '../../user/entities/user.entity';
+import { Group } from '../../groups/entities/group.entity';
 
 @Entity()
 export class Message {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column('text')
   content: string;
@@ -20,10 +20,10 @@ export class Message {
   timestamp: Date;
 
   @ManyToOne(() => Group, (group) => group.messages)
-  @JoinColumn({ name: 'id_group' })
+  @JoinColumn({ name: 'group_id', referencedColumnName: 'id' })
   group: Group;
 
   @ManyToOne(() => User, (user) => user.messages)
-  @JoinColumn({ name: 'id_user' })
-  user: User;
+  @JoinColumn({ name: 'author_id', referencedColumnName: 'id' })
+  author: User;
 }
