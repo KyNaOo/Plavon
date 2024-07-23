@@ -2,7 +2,9 @@ export default {
     light: {
         text: '#000',
         iconColor: '#f595f2',
-        itemBackground: '#fff',
+
+        itemBackground: '#ffA0B5',
+
         textDisabledColor: '#777',
         white: '#fff',
         background: '#fff',
