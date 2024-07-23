@@ -8,10 +8,8 @@ import { MessageModule } from './message/message.module';
 import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from './auth/auth.module';
 import { InterestModule } from './interest/interest.module';
-import { BullModule } from '@nestjs/bullmq';
-import { NotificationGateway } from './notification/notification.gateway';
-import { NotificationService } from './notification/notification.service';
 import { NotificationModule } from './notification/notification.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -30,6 +28,6 @@ import { NotificationModule } from './notification/notification.module';
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, NotificationGateway, NotificationService],
+  providers: [AppService],
 })
 export class AppModule {}
