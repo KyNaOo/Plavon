@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import {Link, router, useRouter} from 'expo-router';
 import { Button } from 'react-native-paper';
 
 export default function index() {
@@ -29,7 +29,8 @@ export default function index() {
           textColor='white'
           labelStyle={styles.buttonText}
           style={styles.button}
-          onPress={() => router.navigate('/home')}
+          onPress={() => router.navigate('/login')}
+            // onPress={() => {router.navigate('/settings/DetailsProfile')}}
         >
           Se connecter
         </Button>
