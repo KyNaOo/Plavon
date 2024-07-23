@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, StatusBar, Platform, ScrollView } from 'react-native';
 import { Card, Chip, Searchbar, TextInput, IconButton, Button } from 'react-native-paper';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withTiming, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
   Easing,
   runOnJS
 } from 'react-native-reanimated';
@@ -22,8 +22,8 @@ interface CardData {
 
 export default function GroupScreen() {
   const friendData: FriendData[] = [
-    { name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, 
-    { name: 'David' }, { name: 'Emma' }, { name: 'Frank' }, 
+    { name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' },
+    { name: 'David' }, { name: 'Emma' }, { name: 'Frank' },
     { name: 'Grace' }, { name: 'Henry' }
   ];
 
@@ -46,7 +46,7 @@ export default function GroupScreen() {
     setGroupName('');
   };
 
-  const filteredFriends = friendData.filter(friend => 
+  const filteredFriends = friendData.filter(friend =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase()) && !selectedNames.includes(friend.name)
   );
 
@@ -79,7 +79,7 @@ export default function GroupScreen() {
   );
 
   const renderModalContent = () => (
-    <ScrollView style={styles.modalScrollView}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScrollView}>
       <TextInput
         label="Nom du groupe"
         value={groupName}
@@ -179,16 +179,23 @@ const styles = StyleSheet.create({
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 10,
+
   },
   chip: {
     margin: 4,
   },
   searchBar: {
     marginBottom: 10,
+    borderRadius: 8,
+
   },
   friendCard: {
+
     marginBottom: 8,
+    width: '100%',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: Colors.light.iconColor
   },
   friendName: {
     fontFamily: 'PoppinsRegular',
@@ -200,11 +207,12 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 8,
-    backgroundColor:Colors.light.iconColor
+    backgroundColor: Colors.light.iconColor
   },
   buttonText: {
     fontFamily: 'PoppinsRegular',
     fontSize: 16,
+
   },
   modalScrollView: {
     flex: 1,
