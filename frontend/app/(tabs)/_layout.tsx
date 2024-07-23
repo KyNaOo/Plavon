@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tabs} from 'expo-router';
+import {router, Tabs} from 'expo-router';
 import {Ionicons, FontAwesome} from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import {useColorScheme} from '@/components/useColorScheme';
@@ -13,7 +13,9 @@ export default function TabLayout() {
 
     return (
         <>
-            <TopBar onBellPress={() => {}} />
+            <TopBar onBellPress={() => {
+                router.navigate('/settings/Notifications');
+            }} />
             <Tabs
                 screenOptions={{
                     tabBarActiveTintColor: Colors[colorScheme ?? 'light'].text,
