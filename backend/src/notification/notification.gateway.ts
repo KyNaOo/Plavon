@@ -10,6 +10,10 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Injectable, Logger } from '@nestjs/common';
 import { NotificationService } from './notification.service';
+import {
+  CreateNotificationDto,
+  UpdateNotificationDto,
+} from './dto/notification.dto';
 
 const gatewayMetadata = {
   namespace: '/notifications',
@@ -137,5 +141,35 @@ export class NotificationGateway
    */
   sendGroupNotification(groupId: string, message: string) {
     this.server.to(groupId).emit('notification', message);
+  }
+
+  @SubscribeMessage('createNotification')
+  /**
+   * Creates a notification using the provided data.
+   *
+   * @param {Socket} client - The connected socket.
+   * @param {CreateNotificationDto} data - The data used to create the notification.
+   * @return {Promise<void>} A promise that resolves when the notification is created.
+   */
+  async createNotification(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: CreateNotificationDto,
+  ) {
+    await this.notificationService.createNotification(data);
+  }
+
+  @SubscribeMessage('notificationReaded')
+  /**
+   * Handles the event when a notification is marked as read.
+   *
+   * @param {Socket} client - The connected socket.
+   * @param {UpdateNotificationDto} data - The data containing the notification ID to be marked as read.
+   * @return {Promise<void>} A promise that resolves when the notification is marked as read.
+   */
+  async handleNotificationReaded(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: UpdateNotificationDto,
+  ) {
+    await this.notificationService.markNotificationAsRead(data.id);
   }
 }
