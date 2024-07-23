@@ -21,7 +21,6 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const BACKEND_PORT = process.env.BACKEND_PORT ?? 3000;
 
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
