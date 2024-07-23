@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import BackButton from '@/components/backButton';
 import Colors from '@/constants/Colors';
+import { Step1, Step2 } from './registerSteps';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
   const [confMdp, setConfMdp] = useState('');
+  const [bio, setBio] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const nextStep = () => {
+    if (currentStep < 2) setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -17,7 +28,7 @@ export default function RegisterScreen() {
         style={styles.keyboardAvoidingView}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-         <BackButton href='/'/>
+          <BackButton href='/'/>
           <View style={styles.topContainer}>
             <Image
               source={require('@/assets/images/logo-transparent.png')}
@@ -29,51 +40,42 @@ export default function RegisterScreen() {
             </Text>
           </View>
           <View style={styles.middleContainer}>
-            <TextInput
-              label="Email"
-              value={email}
-              onChangeText={(email) => setEmail(email)}
-              style={styles.input}
-              theme={{ roundness: 10 }}
-            />
-            <TextInput
-              label="Mot de passe"
-              value={mdp}
-              onChangeText={(mdp) => setMdp(mdp)}
-              style={styles.input}
-              secureTextEntry
-              theme={{ roundness: 10 }}
-            />
-            <TextInput
-              label="Confirmer le mot de passe"
-              value={confMdp}
-              onChangeText={(confMdp) => setConfMdp(confMdp)}
-              style={styles.input}
-              secureTextEntry
-              theme={{ roundness: 10 }}
-            />
+            {currentStep === 1 ? 
+              <Step1 email={email} setEmail={setEmail} mdp={mdp} setMdp={setMdp} confMdp={confMdp} setConfMdp={setConfMdp} /> : 
+              <Step2 bio={bio} setBio={setBio} />
+            }
             <Link href="/login" asChild>
               <Text style={styles.linkText}>Vous avez déjà un compte?</Text>
             </Link>
           </View>
           <View style={styles.buttonContainer}>
+            {currentStep > 1 && (
+              <Button
+                mode="contained"
+                buttonColor='white'
+                labelStyle={styles.buttonText}
+                textColor='#EFB4E9'
+                style={styles.button}
+                onPress={prevStep}
+              >
+                Précédent
+              </Button>
+            )}
             <Button
               mode="contained"
               buttonColor="#EFB4E9"
               labelStyle={styles.buttonText}
               style={styles.button}
-              onPress={() => {
-                console.log(email, mdp, confMdp)
-              }}
+              onPress={currentStep === 2 ? () => console.log(email, mdp, confMdp, bio) : nextStep}
             >
-              S'inscrire
+              {currentStep === 2 ? "S'inscrire" : "Suivant"}
             </Button>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -86,12 +88,6 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 25,
-    zIndex: 1,
   },
   topContainer: {
     alignItems: 'center',
@@ -114,9 +110,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 20,
     marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   button: {
-    width: '90%',
+    width: '45%',
     marginVertical: 15,
   },
   buttonText: {
@@ -133,10 +131,6 @@ const styles = StyleSheet.create({
     fontFamily: 'PoppinsRegular',
     color: 'white',
     textAlign: 'center',
-    marginBottom: 20,
-  },
-  input: {
-    width: '80%',
     marginBottom: 20,
   },
   linkText: {
