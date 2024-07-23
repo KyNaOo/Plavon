@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link, router, useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
 
 export default function index() {
@@ -23,13 +23,14 @@ export default function index() {
       <View style={styles.buttonContainer}>
 
 
+
         <Button
           mode="contained"
           buttonColor='#EFB4E9'
           textColor='white'
           labelStyle={styles.buttonText}
           style={styles.button}
-          onPress={() => router.navigate('/home')}
+          onPress={() => router.navigate('/login')}
         >
           Se connecter
         </Button>
@@ -44,7 +45,6 @@ export default function index() {
 
           S'inscrire
         </Button>
-
       </View>
       <TouchableOpacity onPress={openPrivacyPolicy} style={styles.linkContainer}>
         <Text style={styles.linkText}>Politique de confidentialité</Text>
@@ -89,4 +89,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-

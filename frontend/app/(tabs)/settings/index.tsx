@@ -10,6 +10,9 @@ export default function SettignsScreen() {
     const navToDetails = () =>{
         router.navigate('/settings/DetailsProfile');
     }
+    const navToChat = () =>{
+        router.navigate('/group/Chat');
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -26,7 +29,7 @@ export default function SettignsScreen() {
                         mode="outlined"
                         style={styles.button}
                         labelStyle={styles.buttonText}
-                        onPress={() => {}}
+                        onPress={navToChat}
                         icon="key-variant"
                     >
                         Changer mon mot de passe
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginVertical: 10,
-        borderColor: Colors.light.itemBackground,
+        borderColor: Colors.light.secondaryPurpleBackground,
         borderWidth: 1,
     },
     buttonText: {
