@@ -6,18 +6,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import * as fs from 'node:fs';
+import * as process from 'node:process';
 
 config();
 
-const httpsOptions = {
-  key: fs.readFileSync('./secrets/cert.key'),
-  cert: fs.readFileSync('./secrets/cert.crt'),
-};
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
   const logger = new Logger('Bootstrap');

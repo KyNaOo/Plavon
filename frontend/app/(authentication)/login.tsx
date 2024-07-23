@@ -1,14 +1,56 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {Link, router} from 'expo-router';
+import {Button, HelperText, Icon, Snackbar, TextInput} from 'react-native-paper';
 import BackButton from '@/components/backButton';
 import Colors from '@/constants/Colors';
+import api from "@/services/api";
+import {useAuth} from "@/services/AuthContext";
 
+type error = {
+  "message": string[];
+  "error": string;
+  "statusCode": number;
+}
 export default function LoginScreen () {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
+  const [error, setError] = useState({
+    "message": '',
+    "error": '',
+    "statusCode": 401
+  });
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const {saveToken} = useAuth();
 
+  const dismissError = () => {
+    setIsError(false);
+    setError({
+      "message": '',
+      "error": '',
+      "statusCode": 401
+    })
+  }
+
+  const login = async () => {
+    setIsLoading(true)
+    await api.post('/auth/login', {
+      email: email,
+      password: mdp
+    }).then(response => {
+      if (response.status === 200) {
+        setIsLoading(false)
+        saveToken(response.data.accessToken);
+        router.navigate('/home')
+      }
+    }).catch(error => {
+      setIsLoading(false)
+      console.log(JSON.parse(error.request.response))
+      setError(JSON.parse(error.request.response))
+      setIsError(true)
+    })
+  }
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
@@ -17,6 +59,15 @@ export default function LoginScreen () {
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <BackButton href='/'/>
+          <Snackbar
+              visible={isError}
+              onIconPress={dismissError}
+              onDismiss={dismissError}
+              style={styles.snackBar}
+              duration={3000}
+          >
+            {error.message[0]}
+          </Snackbar>
           <View style={styles.topContainer}>
             <Image
               source={require('@/assets/images/logo-transparent.png')}
@@ -33,7 +84,7 @@ export default function LoginScreen () {
               value={email}
               onChangeText={(email) => setEmail(email)}
               style={styles.input}
-              theme={{ roundness: 10 }}
+              theme={{ roundness: 5 }}
             />
             <TextInput
               label="Mot de passe"
@@ -41,7 +92,7 @@ export default function LoginScreen () {
               onChangeText={(mdp) => setMdp(mdp)}
               style={styles.input}
               secureTextEntry
-              theme={{ roundness: 10 }}
+              theme={{ roundness: 5 }}
             />
             <Link href="/register" asChild>
               <Text style={styles.linkText}>Pas encore de compte?</Text>
@@ -53,9 +104,8 @@ export default function LoginScreen () {
               buttonColor="#EFB4E9"
               labelStyle={styles.buttonText}
               style={styles.button}
-              onPress={() => {
-                console.log(email,mdp)
-              }}
+              onPress={login}
+              loading={isLoading}
             >
               Connexion
             </Button>
@@ -135,4 +185,9 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontFamily: 'PoppinsRegular',
   },
+  snackBar: {
+    width: '100%',
+    alignSelf: 'center',
+    marginLeft: 50
+  }
 });
