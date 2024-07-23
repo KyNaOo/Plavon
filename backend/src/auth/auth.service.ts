@@ -21,10 +21,10 @@ export class AuthService {
   async signIn(loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.userService.findOneByEmail(loginDto.email);
     if (user === null) {
-      throw new ConflictException('Invalid email or password');
+      throw new ConflictException(['Email ou mot de passe invalide !']);
     }
     if (!bcrypt.compareSync(loginDto.password, user?.password)) {
-      throw new ConflictException('Invalid email or password');
+      throw new ConflictException(['Email ou mot de passe invalide !']);
     }
     const payload = { sub: user.id, email: user.email };
     return {

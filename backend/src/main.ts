@@ -11,19 +11,14 @@ import * as process from 'node:process';
 
 config();
 
-const httpsOptions = {
-  key: fs.readFileSync('./src/cert/key.pem'),
-  cert: fs.readFileSync('./src/cert/cert.pem'),
-};
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
-  });
+  const app = await NestFactory.create(AppModule);
+
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
-  const BACKEND_PORT = process.env.BACKEND_PORT ?? 3000;
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -31,6 +26,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(BACKEND_PORT, '0.0.0.0');
+
+  const BACKEND_PORT = process.env.BACKEND_PORT ?? 3000;
+  await app.listen(BACKEND_PORT);
 }
 bootstrap();
