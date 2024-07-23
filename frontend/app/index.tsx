@@ -21,12 +21,28 @@ export default function index() {
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
-        <Link href="/home" asChild>
-          <Button mode="contained" buttonColor='#EFB4E9' textColor='white' labelStyle={styles.buttonText} style={styles.button}>
-            Se connecter
-          </Button>
-        </Link>
-        <Button mode="contained" buttonColor='white' textColor='#F595F2' labelStyle={styles.buttonText} style={styles.button}>
+
+
+
+        <Button
+          mode="contained"
+          buttonColor='#EFB4E9'
+          textColor='white'
+          labelStyle={styles.buttonText}
+          style={styles.button}
+          onPress={() => router.navigate('/login')}
+        >
+          Se connecter
+        </Button>
+        <Button
+          mode="contained"
+          buttonColor='white'
+          textColor='#F595F2'
+          labelStyle={styles.buttonText}
+          style={styles.button}
+          onPress={() => router.navigate('/register')}
+        >
+
           S'inscrire
         </Button>
       </View>
