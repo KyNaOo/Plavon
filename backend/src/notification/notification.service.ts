@@ -20,7 +20,7 @@ export class NotificationService {
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
     @InjectQueue('userNotifications') private userQueue: Queue,
-    @InjectQueue('topicNotifications') private topicQueue: Queue,
+    @InjectQueue('groupNotifications') private topicQueue: Queue,
   ) {}
 
   async createNotification(
@@ -47,7 +47,7 @@ export class NotificationService {
   }
 
   async markNotificationAsRead(id: string): Promise<Notification> {
-    const notification = await this.notificationRepository.findOne(id);
+    const notification = await this.notificationRepository.findOneBy({ id });
     if (!notification) {
       throw new Error('Notification not found');
     }
@@ -59,7 +59,7 @@ export class NotificationService {
     id: string,
     updateNotificationDto: UpdateNotificationDto,
   ): Promise<Notification> {
-    const notification = await this.notificationRepository.findOne(id);
+    const notification = await this.notificationRepository.findOneBy({ id });
     if (!notification) {
       throw new Error('Notification not found');
     }
