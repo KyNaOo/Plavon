@@ -6,7 +6,10 @@ export default {
         textDisabledColor: '#777',
         white: '#fff',
         background: '#fff',
-        purpleBackground: '#605790',
+        purpleBackground:'#605790',
+        fieldTextColor: '#ECECEC',
+        secondaryPurpleBackground: '#E6DEFF',
+        greyBackground: '#DEDEDE',
         topBarColor: '#FFA0B5', // rose claire
         colorBeige: '#FFE3D8', // beige claire
         colorRose: '#FBA5A0', //color mid rose
