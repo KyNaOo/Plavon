@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 24,
         fontFamily: 'PoppinsBold',
-        color: Colors.light.itemBackground,
+        color: Colors.light.colorRose,
     },
     statLabel: {
         fontSize: 16,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     },
     chip: {
         margin: 12,
-        backgroundColor: Colors.light.itemBackground,
+        backgroundColor: Colors.light.colorRose,
         width: '40%',
         justifyContent: 'center',
         textAlign: 'center',
