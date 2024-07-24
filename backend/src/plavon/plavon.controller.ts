@@ -3,40 +3,49 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { PlavonService } from './plavon.service';
 import { CreatePlavonDto } from './dto/create-plavon.dto';
 import { UpdatePlavonDto } from './dto/update-plavon.dto';
+import { AddParticipantDto } from './dto/add-participant.dto';
 
 @Controller('plavon')
 export class PlavonController {
   constructor(private readonly plavonService: PlavonService) {}
 
   @Post()
-  create(@Body() createPlavonDto: CreatePlavonDto) {
-    return this.plavonService.create(createPlavonDto);
+  async create(@Body() createPlavonDto: CreatePlavonDto) {
+    return await this.plavonService.create(createPlavonDto);
   }
 
   @Get()
-  findAll() {
-    return this.plavonService.findAll();
+  async findAll() {
+    return await this.plavonService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.plavonService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.plavonService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlavonDto: UpdatePlavonDto) {
-    return this.plavonService.update(id, updatePlavonDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() data: UpdatePlavonDto) {
+    return await this.plavonService.update(id, data);
+  }
+
+  @Put(':id/participants')
+  async addParticipant(
+    @Param('id') id: string,
+    @Body() data: AddParticipantDto,
+  ) {
+    return await this.plavonService.addParticipant(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.plavonService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.plavonService.remove(id);
   }
 }
