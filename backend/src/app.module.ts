@@ -8,6 +8,7 @@ import { MessageModule } from './message/message.module';
 import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from './auth/auth.module';
 import { InterestModule } from './interest/interest.module';
+import { PlavonModule } from './plavon/plavon.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { InterestModule } from './interest/interest.module';
     GroupsModule,
     AuthModule,
     InterestModule,
+    PlavonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

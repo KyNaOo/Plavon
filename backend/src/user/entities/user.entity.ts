@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -9,6 +10,7 @@ import {
 import { Interest } from '../../interest/entities/interest.entity';
 import { Group } from '../../groups/entities/group.entity';
 import { Message } from '../../message/entities/message.entity';
+import { Plavon } from '../../plavon/entities/plavon.entity';
 
 @Entity()
 export class User {
@@ -60,4 +62,8 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.author)
   messages: Message[];
+
+  @OneToMany(() => Plavon, (plavon) => plavon.author)
+  @JoinColumn({ name: 'plavon_id', referencedColumnName: 'id' })
+  plavons: Plavon[];
 }
