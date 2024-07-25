@@ -1,4 +1,22 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePlavonDto } from './create-plavon.dto';
+import { IsDate, IsDefined, IsString, IsUUID } from 'class-validator';
 
-export class UpdatePlavonDto extends PartialType(CreatePlavonDto) {}
+export class UpdatePlavonDto {
+  @IsDefined()
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  name?: string;
+
+  @IsString()
+  description?: string;
+
+  @IsString()
+  color?: string;
+
+  @IsDate()
+  startTime?: Date;
+
+  @IsDate()
+  endTime?: Date;
+}

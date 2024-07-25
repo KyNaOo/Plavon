@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -64,6 +63,19 @@ export class User {
   messages: Message[];
 
   @OneToMany(() => Plavon, (plavon) => plavon.author)
-  @JoinColumn({ name: 'plavon_id', referencedColumnName: 'id' })
-  plavons: Plavon[];
+  createdPlavons: Plavon[];
+
+  @ManyToMany(() => Plavon, (plavon) => plavon.participants)
+  @JoinTable({
+    name: 'joined_plavons',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'plavon_id',
+      referencedColumnName: 'id',
+    },
+  })
+  joinedPlavons: Plavon[];
 }
