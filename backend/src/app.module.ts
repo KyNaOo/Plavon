@@ -8,15 +8,24 @@ import { MessageModule } from './message/message.module';
 import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from './auth/auth.module';
 import { InterestModule } from './interest/interest.module';
+import { NotificationModule } from './notification/notification.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceOptions),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST ?? 'localhost',
+        port: parseInt(process.env.REDIS_PORT ?? '6379'),
+      },
+    }),
     UserModule,
     MessageModule,
     GroupsModule,
     AuthModule,
     InterestModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
