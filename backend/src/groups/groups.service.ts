@@ -7,7 +7,6 @@ import { Group } from './entities/group.entity';
 import { User } from '../user/entities/user.entity';
 import { JoinGroupDto } from './dto/join-group.dto';
 import { LeaveGroupDto } from './dto/leave-group.dto';
-import { catchError } from 'rxjs';
 
 @Injectable()
 export class GroupsService {
