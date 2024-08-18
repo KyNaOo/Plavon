@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { RenameGroupDto } from './dto/rename-group.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,6 +16,8 @@ export class GroupsService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
+
+  private readonly logger = new Logger(GroupsService.name);
 
   /**
    * Creates a new group with the given data and adds the creator as a member.
@@ -115,6 +117,7 @@ export class GroupsService {
 
     return group;
   }
+
   async findByUser(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
 
@@ -123,6 +126,34 @@ export class GroupsService {
     }
 
     return user.groups;
+  }
+
+  /**
+   * Retrieves the members of a group based on the group ID.
+   *
+   * @param {string} groupId - The ID of the group to retrieve members from.
+   * @return {Promise<User[]>} An array of users who are members of the group.
+   */
+  async getMembers(groupId: string): Promise<User[]> {
+    try {
+      const group = await this.groupRepository.findOne({
+        where: { id: groupId },
+        relations: {
+          members: true,
+        },
+      });
+
+      if (!group) {
+        throw new NotFoundException(
+          `Failed to retrieve group ${groupId} members.`,
+        );
+      }
+
+      return group.members;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
   /**
