@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { InterestModule } from './interest/interest.module';
 import { NotificationModule } from './notification/notification.module';
 import { BullModule } from '@nestjs/bullmq';
+import { PlavonModule } from './plavon/plavon.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BullModule } from '@nestjs/bullmq';
     AuthModule,
     InterestModule,
     NotificationModule,
+    PlavonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
