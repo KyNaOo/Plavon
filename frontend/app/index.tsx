@@ -30,7 +30,7 @@ export default function index() {
           textColor='white'
           labelStyle={styles.buttonText}
           style={styles.button}
-          onPress={() => router.navigate('/login')}
+          onPress={() => router.navigate('/home')}
         >
           Se connecter
         </Button>
