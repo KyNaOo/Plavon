@@ -6,16 +6,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import * as fs from 'node:fs';
 import * as process from 'node:process';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 config();
-
-const httpsOptions = {
-  key: fs.readFileSync('./secrets/cert.key'),
-  cert: fs.readFileSync('./secrets/cert.crt'),
-};
 
 const swaggerConfig = new DocumentBuilder()
   .setTitle('Plavon API')

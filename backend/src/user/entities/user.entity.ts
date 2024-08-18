@@ -5,7 +5,6 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Interest } from '../../interest/entities/interest.entity';
