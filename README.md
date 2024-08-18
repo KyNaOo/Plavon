@@ -21,6 +21,8 @@ DB_PASSWORD=
 DB_PORT=
 DB_NAME=
 JWT_SECRET=
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 ### Install dependancies
 
@@ -32,7 +34,7 @@ npm install
 ### Start DB and Run migrations
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml up -d
 ```
 
 ```bash
@@ -50,6 +52,11 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+### Run NGrok
+```bash
+ngrok http --domain=<your-ngrok-domain> <BACKEND_PORT>
 ```
 
 # Frontend
