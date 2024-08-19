@@ -149,8 +149,9 @@ export default function DetailsProfile() {
                     title="Vos centres d’intérêt"
                 >
                     <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        behavior={Platform.OS === 'ios'||'android' ? 'padding' : 'height'}
                         style={styles.keyboardAvoidingView}
+                        keyboardVerticalOffset={Platform.select({ios: 0, android: 200})}
                     >
                     <ScrollView
                         contentContainerStyle={styles.modalScrollViewContent}
@@ -176,7 +177,6 @@ export default function DetailsProfile() {
                             onFocus={handleFocus}
                         />
 
-                    <ScrollView>
                     <View style={styles.searchResultsContainer}>
                         {filteredInterests.map((interest, index) => (
                             <Chip
@@ -189,7 +189,6 @@ export default function DetailsProfile() {
                             </Chip>
                         ))}
                     </View>
-                    </ScrollView>
                     </ScrollView>
                     </KeyboardAvoidingView>
                 </CustomModal>
@@ -261,7 +260,7 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 24,
         fontFamily: 'PoppinsBold',
-        color: Colors.light.itemBackground,
+        color: Colors.light.colorRose,
     },
     statLabel: {
         fontSize: 16,
@@ -298,7 +297,7 @@ const styles = StyleSheet.create({
     },
     chip: {
         margin: 12,
-        backgroundColor: Colors.light.itemBackground,
+        backgroundColor: Colors.light.colorRose,
         width: '40%',
         justifyContent: 'center',
         textAlign: 'center',
