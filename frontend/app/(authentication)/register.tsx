@@ -11,6 +11,8 @@ export default function RegisterScreen() {
   const [mdp, setMdp] = useState('');
   const [confMdp, setConfMdp] = useState('');
   const [bio, setBio] = useState('');
+  const [name, setName] = useState('');   
+  const [prenom, setPrenom] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
 
   const nextStep = () => {
@@ -34,15 +36,20 @@ export default function RegisterScreen() {
               source={require('@/assets/images/logo-transparent.png')}
               style={styles.image}
             />
-            <Text style={styles.title}>Inscription</Text>
-            <Text style={styles.description}>
-              Inscrivez vous afin de pouvoir changer le cours de vos évènements !
-            </Text>
+            {/* Conditionally render title and description only for Step 1 */}
+            {currentStep === 1 && (
+              <>
+                <Text style={styles.title}>Inscription</Text>
+                <Text style={styles.description}>
+                  Inscrivez vous afin de pouvoir changer le cours de vos évènements !
+                </Text>
+              </>
+            )}
           </View>
           <View style={styles.middleContainer}>
             {currentStep === 1 ? 
               <Step1 email={email} setEmail={setEmail} mdp={mdp} setMdp={setMdp} confMdp={confMdp} setConfMdp={setConfMdp} /> : 
-              <Step2 bio={bio} setBio={setBio} />
+              <Step2 bio={bio} setBio={setBio} name={name} setName={setName} prenom={prenom} setPrenom={setPrenom} />
             }
             <Link href="/login" asChild>
               <Text style={styles.linkText}>Vous avez déjà un compte?</Text>
@@ -66,7 +73,7 @@ export default function RegisterScreen() {
               buttonColor="#EFB4E9"
               labelStyle={styles.buttonText}
               style={styles.button}
-              onPress={currentStep === 2 ? () => console.log(email, mdp, confMdp, bio) : nextStep}
+              onPress={currentStep === 2 ? () => console.log(email, mdp, confMdp, bio, name, prenom) : nextStep}
             >
               {currentStep === 2 ? "S'inscrire" : "Suivant"}
             </Button>
@@ -122,6 +129,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 5,
   },
+  linkText: {
+    color: Colors.light.itemBackground,
+    textDecorationLine: 'underline',
+    fontFamily: 'PoppinsRegular',
+  },
   title: {
     fontFamily: 'PoppinsRegular',
     fontSize: 45,
@@ -132,10 +144,5 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     marginBottom: 20,
-  },
-  linkText: {
-    color: Colors.light.itemBackground,
-    textDecorationLine: 'underline',
-    fontFamily: 'PoppinsRegular',
   },
 });
