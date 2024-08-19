@@ -27,19 +27,19 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty({
-    message: "Le prénom ne doit pas être vide",
+    message: 'Le prénom ne doit pas être vide',
   })
   firstName: string;
 
   @IsString()
   @IsNotEmpty({
-    message: "Le nom de doit pas être vide",
+    message: 'Le nom de doit pas être vide',
   })
   lastName: string;
 
   @IsString()
   @IsNotEmpty({
-    message:"La bio ne doit pas être vide",
+    message: 'La bio ne doit pas être vide',
   })
   bio: string;
 }

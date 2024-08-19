@@ -79,9 +79,7 @@ export default function RegisterScreen() {
       await saveToken(response.data.access_token);
       setIsLoading(false);
       router.navigate('/home');
-      console.log(response.data.access_token)
     } else {
-      console.log(response)
       setIsLoading(false);
       setError(JSON.parse(response.request.response));
       setIsError(true);
