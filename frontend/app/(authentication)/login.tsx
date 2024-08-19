@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Link} from 'expo-router';
+import {Link, router} from 'expo-router';
 import {Button, Snackbar, TextInput} from 'react-native-paper';
 import BackButton from '@/components/backButton';
 import Colors from '@/constants/Colors';
@@ -46,6 +46,7 @@ export default function LoginScreen() {
         if (response.status === 200) {
             await saveToken(response.data.access_token);
             setIsLoading(false);
+            router.navigate('/home');
         } else {
             setIsLoading(false);
             setError(JSON.parse(response.request.response));
