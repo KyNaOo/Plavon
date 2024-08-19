@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -11,6 +7,7 @@ import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from '../user/dto/login.dto';
 import { encodePassword } from '../utils/hashService';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +20,11 @@ export class AuthService {
 
   async signIn(loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.userService.findOneByEmail(loginDto.email);
-    if (user?.password !== loginDto.password) {
-      throw new UnauthorizedException();
+    if (user === null) {
+      throw new ConflictException(['Email ou mot de passe invalide !']);
+    }
+    if (!bcrypt.compareSync(loginDto.password, user?.password)) {
+      throw new ConflictException(['Email ou mot de passe invalide !']);
     }
     const payload = { sub: user.id, email: user.email };
     return {
