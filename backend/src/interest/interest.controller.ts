@@ -29,7 +29,7 @@ export class InterestController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.interestService.findOne(+id);
+    return this.interestService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,6 +42,6 @@ export class InterestController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.interestService.remove(+id);
+    return this.interestService.remove(id);
   }
 }

@@ -1,20 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { CreateInterestDto } from './dto/create-interest.dto';
 import { UpdateInterestDto } from './dto/update-interest.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Interest } from './entities/interest.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class InterestService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(
+    @InjectRepository(Interest)
+    private interestRepository: Repository<Interest>,
+  ) {}
+
   create(createInterestDto: CreateInterestDto) {
-    return 'This action adds a new interest';
+    const interest = this.interestRepository.create(createInterestDto);
+    return this.interestRepository.save(interest);
   }
 
   findAll() {
-    return `This action returns all interest`;
+    return this.interestRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} interest`;
+  findOne(id: string) {
+    return this.interestRepository.findOneBy({ id });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,7 +30,7 @@ export class InterestService {
     return `This action updates a #${id} interest`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} interest`;
   }
 }
