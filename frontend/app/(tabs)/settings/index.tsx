@@ -1,18 +1,28 @@
+import React from 'react';
 import {useRouter} from 'expo-router';
 import {View, Text, StyleSheet, SafeAreaView, Animated} from 'react-native';
-import ScrollView = Animated.ScrollView;
 import { Avatar, Button, List } from 'react-native-paper';
+import ScrollView = Animated.ScrollView;
 import TopBar from "@/components/TopBar";
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/services/AuthContext';
 
-export default function SettignsScreen() {
+export default function SettingsScreen() {
     const router = useRouter();
-    const navToDetails = () =>{
+    const { logout } = useAuth(); 
+
+    const navToDetails = () => {
         router.navigate('/settings/DetailsProfile');
-    }
-    const navToChat = () =>{
+    };
+
+    const navToChat = () => {
         router.navigate('/group/Chat');
-    }
+    };
+
+    const handleLogout = async () => {
+        await logout();  
+        router.replace('/'); 
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -42,6 +52,15 @@ export default function SettignsScreen() {
                         icon="account"
                     >
                         Information personnelles
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        style={styles.button}
+                        labelStyle={styles.buttonText}
+                        onPress={handleLogout}  
+                        icon="exit-to-app"
+                    >
+                        Déconnexion
                     </Button>
                 </List.Section>
             </View>
