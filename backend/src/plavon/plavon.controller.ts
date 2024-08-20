@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PlavonService } from './plavon.service';
 import { CreatePlavonDto } from './dto/create-plavon.dto';
 import { UpdatePlavonDto } from './dto/update-plavon.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('plavon')
 export class PlavonController {
@@ -22,7 +24,13 @@ export class PlavonController {
 
   @Get()
   findAll() {
-    return this.plavonService.findAll();
+    // return this.plavonService.findAll();
+    return new Date();
+  }
+
+  @Get(':month')
+  findAllByMonth(@Param('month') month: number) {
+    return this.plavonService.findAllByMonth(month);
   }
 
   @Get(':id')

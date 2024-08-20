@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePlavonDto } from './dto/create-plavon.dto';
 import { UpdatePlavonDto } from './dto/update-plavon.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Plavon } from './entities/plavon.entity';
 
 @Injectable()
@@ -16,8 +16,24 @@ export class PlavonService {
     return this.plavonRepository.save(plavon);
   }
 
-  async findAll() {
-    return this.plavonRepository.find();
+  async findAllByDay(id: string) {
+    const now = new Date();
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59);
+
+    return this.plavonRepository.find({
+      where: {
+        startTime: Between(now, endOfToday),
+        id: id,
+      },
+    });
+  }
+
+  async findAllByMonth(month: number) {
+    return this.plavonRepository
+      .createQueryBuilder('plavon')
+      .where('EXTRACT(MONTH FROM plavon.startTime) = :month', { month })
+      .getMany();
   }
 
   async findOne(id: string) {
