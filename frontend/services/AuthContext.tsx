@@ -7,6 +7,7 @@ type AuthContextType = {
     logout: () => Promise<void>;
     getToken: () => Promise<string | null>;
     decodeToken: () => Promise<any>;
+    isLogged: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,6 +39,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return await AsyncStorage.getItem('token');
     }
 
+    const isLogged = async () => {
+        const token = await getToken();
+        return !!token;
+    }
+
     const decodeToken = async () => {
         const token = await getToken();
         if (!token) {
@@ -52,7 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         saveToken,
         logout,
         getToken,
-        decodeToken
+        decodeToken,
+        isLogged,
     };
 
     return <AuthContext.Provider value={value}>
