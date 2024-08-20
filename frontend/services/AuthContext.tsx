@@ -5,6 +5,7 @@ type AuthContextType = {
     saveToken: (token: string) => Promise<void>;
     logout: () => Promise<void>;
     getToken: () => Promise<string|null>;
+    isLogged: () => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -36,10 +37,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return await AsyncStorage.getItem('token');
     }
 
+    const isLogged = () => {
+        const token = getToken();
+        return !!token;
+    }
+
     const value = {
         saveToken,
         logout,
-        getToken
+        getToken,
+        isLogged
     };
 
     return <AuthContext.Provider value={value}>

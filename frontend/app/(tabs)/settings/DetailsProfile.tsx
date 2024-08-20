@@ -15,19 +15,60 @@ import ScrollView = Animated.ScrollView;
 import {useEffect, useRef, useState} from "react";
 import {router} from "expo-router";
 import CustomModal from "@/components/Modal";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import FullScreenModal from "@/components/FullScreenModal";
+import {MaterialIcons} from "@expo/vector-icons";
+import api from "@/services/api";
+import {useAuth} from "@/services/AuthContext";
 
 export default function DetailsProfile() {
+    type User = {
+        firstName: string;
+        lastName: string;
+        email: string;
+        bio: string;
+    };
+
     const [isEditingBio, setIsEditingBio] = useState(false);
-    const [bioText, setBioText] = useState("D’ailleurs mon zebla c’est Boris");
+    const [bioText, setBioText] = useState<string>();
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedInterests, setSelectedInterests] = useState(['Basket', 'Cinéma', 'Football', 'Billard']);
-    const [availableInterests, setAvailableInterests] = useState(['Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage']);
-    const [displayedInterests, setDisplayedInterests] = useState(selectedInterests);
-    const scrollRef = useRef<KeyboardAwareScrollView>(null);
+    const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+    const [availableInterests, setAvailableInterests] = useState<string[]>([]);
+    const [displayedInterests, setDisplayedInterests] = useState<string[]>(selectedInterests);
+    const [user, setUser] = useState<User>();
     const searchInputRef = useRef<TextInput>(null)
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredInterests, setFilteredInterests] = useState(availableInterests);
+    const {getToken} = useAuth();
+
+    const getAllInterests = async () => {
+        try {
+            // if (await getToken()){
+            //     console.warn(await getToken());
+            // } else {
+            //     console.warn("b");
+            // }
+            const response = await api.get('/interest');
+            if (response.status === 200) {
+                const allInterests = response.data.map((interest: any) => interest.name);
+                setAvailableInterests(allInterests);
+                setFilteredInterests(allInterests); // Mettre à jour les intérêts filtrés avec tous les intérêts
+            }
+        } catch (error) {
+            // @ts-ignore
+            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
+        }
+    }
+    const stopEditingBio = async () => {
+        setIsEditingBio(false);
+        try {
+            const response = await api.patch('/user/22d8ee56-01a0-473b-a5f9-9f6172b97613', {
+                bio: bioText,
+            });
+        } catch (error) {
+            // @ts-ignore
+            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
+        }
+    }
     const onChangeSearch = (query: string) => {
         setSearchQuery(query);
         if (query === '') {
@@ -42,14 +83,12 @@ export default function DetailsProfile() {
     };
     const removeInterest = (interest: string) => {
         setSelectedInterests(selectedInterests.filter(item => item !== interest));
-        setAvailableInterests([...availableInterests, interest]);
+        const updatedAvailableInterests = [...availableInterests, interest].sort();
+        setAvailableInterests(updatedAvailableInterests);
+        const updatedFilteredInterests = [...filteredInterests, interest].sort();
+        setFilteredInterests(updatedFilteredInterests);
     };
 
-    const handleFocus = () => {
-        if (scrollRef.current && searchInputRef.current) {
-            scrollRef.current.scrollToFocusedInput(searchInputRef.current, 0);
-        }
-    };
 
     const addInterest = (interest: string) => {
         if (selectedInterests.length >= 6) {
@@ -65,11 +104,27 @@ export default function DetailsProfile() {
 
     const handleCloseModal = () => {
         setIsModalVisible(!isModalVisible);
+        setDisplayedInterests([...selectedInterests]);
     };
 
+    async function getUserInfos() {
+        try {
+            const response = await api.get('/user/22d8ee56-01a0-473b-a5f9-9f6172b97613');
+            console.warn(response.data.bio);
+            if (response.status === 200) {
+                setUser({firstName: response.data.firstName, lastName: response.data.lastName, email: response.data.email, bio: response.data.bio});
+            }
+        } catch (error) {
+            // @ts-ignore
+            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
+        }
+
+    }
+
     useEffect(() => {
-        setDisplayedInterests(selectedInterests);
-    }, [isModalVisible]);
+        getAllInterests()
+        getUserInfos()
+    }, []);
 
     return (
         <KeyboardAvoidingView
@@ -87,8 +142,8 @@ export default function DetailsProfile() {
                         source={{uri: 'https://your-image-url.com'}}
                         style={styles.avatar}
                     />
-                    <Text style={styles.name}>Ethan Bellaiche</Text>
-                    <Text style={styles.email}>ethanbellaiche0@gmail.com</Text>
+                    <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
+                    <Text style={styles.email}>{user?.email}</Text>
                     <View style={styles.separator}/>
                     <View style={styles.statsContainer}>
                         <View style={styles.stat}>
@@ -106,7 +161,8 @@ export default function DetailsProfile() {
                             <IconButton
                                 icon="pencil"
                                 size={20}
-                                onPress={() => setIsEditingBio(true)}
+                                // onPress={() => setIsEditingBio(true)}
+                                onPress={() => getAllInterests()}
                                 style={styles.bioIcon}
                             />
                         </View>
@@ -115,12 +171,12 @@ export default function DetailsProfile() {
                                 style={styles.bioText}
                                 value={bioText}
                                 onChangeText={setBioText}
-                                onBlur={() => setIsEditingBio(false)}
+                                onBlur={() => stopEditingBio()}
                                 autoFocus
                             />
                         ) : (
                             <>
-                                <Text style={styles.bioText}>{bioText}</Text>
+                                <Text style={styles.bioText}>{user?.bio}</Text>
                             </>
                         )}
                     </TouchableOpacity>
@@ -143,16 +199,11 @@ export default function DetailsProfile() {
                     </View>
                 </View>
                 {isModalVisible && <View style={styles.modalOverlay} />}
-                <CustomModal
+                <FullScreenModal
                     visible={isModalVisible}
                     onClose={handleCloseModal}
                     title="Vos centres d’intérêt"
                 >
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios'||'android' ? 'padding' : 'height'}
-                        style={styles.keyboardAvoidingView}
-                        keyboardVerticalOffset={Platform.select({ios: 0, android: 200})}
-                    >
                     <ScrollView
                         contentContainerStyle={styles.modalScrollViewContent}
                         // keyboardShouldPersistTaps="handled"
@@ -163,26 +214,29 @@ export default function DetailsProfile() {
                                 key={index}
                                 style={styles.chip}
                                 onClose={() => removeInterest(interest)}
+
                             >
                                 <Text style={styles.chipText}>{interest}</Text>
                             </Chip>
                         ))}
                     </View>
+                        <View style={styles.center}>
                         <Searchbar
                             placeholder="Rechercher un centre d’intérêt"
                             style={styles.searchInput}
                             value={searchQuery}
                             onChangeText={onChangeSearch}
                             ref={searchInputRef}
-                            onFocus={handleFocus}
                         />
-
+                        </View>
                     <View style={styles.searchResultsContainer}>
                         {filteredInterests.map((interest, index) => (
                             <Chip
                                 key={index}
                                 style={styles.chip}
-                                icon="plus"
+                                icon={() => (
+                                    <MaterialIcons name="add" size={24} color="white" /> // "close" est une croix droite
+                                )}
                                 onPress={() => addInterest(interest)}
                             >
                                 <Text style={styles.chipText}>{interest}</Text>
@@ -190,8 +244,7 @@ export default function DetailsProfile() {
                         ))}
                     </View>
                     </ScrollView>
-                    </KeyboardAvoidingView>
-                </CustomModal>
+                </FullScreenModal>
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -321,23 +374,22 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
         marginBottom: 20,
-        backgroundColor: '#fff',
-        padding: 20,
+        backgroundColor: Colors.light.white,
         borderRadius: 8,
     },
     modalChip: {
         margin: 4,
     },
     searchInput: {
-        width: '100%',
-        backgroundColor: '#fff',
+        width: '90%',
+        backgroundColor: Colors.light.greyBackground,
         marginBottom: 20,
     },
     searchResultsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: Colors.light.white,
         borderRadius: 8,
         marginBottom: 24,
     },
@@ -357,5 +409,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
