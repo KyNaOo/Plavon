@@ -1,28 +1,60 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { SafeAreaView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Link, router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Button } from 'react-native-paper';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingScreen from "@/components/LoadingScreen";
+import {useAuth} from "@/services/AuthContext";
 
 export default function index() {
 
-  const openmodal = () => {
-    // Functionality for opening modal
-  };
-
+  const [isRootLayoutMounted, setIsRootLayoutMounted] = useState(false);
+  const [userToken, setUserToken] = useState(null);
+  const { isLogged } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsRootLayoutMounted(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      if (isRootLayoutMounted) {
+        try {
+          const isUserLogged = await isLogged();
+          if (isUserLogged) {
+            router.navigate('/home');
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du token:", error);
+        }
+      }
+    };
+
+    checkToken();
+  }, [isRootLayoutMounted]);
+
+  if (!isRootLayoutMounted) {
+    return <LoadingScreen />;
+  }
+
   const openPrivacyPolicy = () => {
     router.push('/PrivacyPolicy');
   };
 
+
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../assets/images/plavon_rose.png')}
+        source={require('@/assets/images/plavon_rose.png')}
         style={styles.image}
       />
       <View style={styles.buttonContainer}>
-
-
 
         <Button
           mode="contained"
