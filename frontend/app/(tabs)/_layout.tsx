@@ -1,11 +1,11 @@
 import React from 'react';
-import {router, Tabs} from 'expo-router';
-import {Ionicons, FontAwesome} from '@expo/vector-icons';
+import { router, Tabs } from 'expo-router';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import {useColorScheme} from '@/components/useColorScheme';
+import { useColorScheme } from '@/components/useColorScheme';
 import AvatarIcon from "react-native-paper/src/components/Avatar/AvatarIcon";
 
-import {Avatar} from "react-native-paper";
+import { Avatar } from "react-native-paper";
 import TopBar from "@/components/TopBar";
 
 export default function TabLayout() {
@@ -29,7 +29,7 @@ export default function TabLayout() {
                     name="home"
                     options={{
                         title: '',
-                        tabBarIcon: ({focused}) => <Ionicons
+                        tabBarIcon: ({ focused }) => <Ionicons
                             name={focused ? "home" : "home-outline"}
                             size={28}
                             color={Colors[colorScheme ?? 'light'].itemBackground}
@@ -37,10 +37,10 @@ export default function TabLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="add-plavon"
+                    name="addPlavons"
                     options={{
                         title: '',
-                        tabBarIcon: ({focused}) => <FontAwesome
+                        tabBarIcon: ({ focused }) => <FontAwesome
                             name="calendar-plus-o"
                             size={24}
                             color={Colors[colorScheme ?? 'light'].itemBackground}
@@ -51,7 +51,7 @@ export default function TabLayout() {
                     name="group"
                     options={{
                         title: '',
-                        tabBarIcon: ({focused}) => <Ionicons
+                        tabBarIcon: ({ focused }) => <Ionicons
                             name={focused ? "people" : "people-outline"}
                             size={32}
                             color={Colors[colorScheme ?? 'light'].itemBackground}
@@ -62,9 +62,9 @@ export default function TabLayout() {
                     name="settings"
                     options={{
                         title: '',
-                        tabBarIcon: ({focused}) => <Avatar.Image
+                        tabBarIcon: ({ focused }) => <Avatar.Image
                             size={32}
-                            source={require("@/assets/images/avatar-default.png")}/>,
+                            source={require("@/assets/images/avatar-default.png")} />,
                     }}
                 />
             </Tabs>
