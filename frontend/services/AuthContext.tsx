@@ -1,10 +1,12 @@
-import React, {createContext, ReactNode, useContext} from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 type AuthContextType = {
     saveToken: (token: string) => Promise<void>;
     logout: () => Promise<void>;
-    getToken: () => Promise<string|null>;
+    getToken: () => Promise<string | null>;
+    decodeToken: () => Promise<any>;
     isLogged: () => boolean;
 };
 
@@ -37,6 +39,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return await AsyncStorage.getItem('token');
     }
 
+    const decodeToken = async () => {
+        const token = await getToken();
+        if (!token) {
+            return null;
+        }
+        return jwtDecode(token);
+    }
+
+
+
     const isLogged = () => {
         const token = getToken();
         return !!token;
@@ -46,6 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         saveToken,
         logout,
         getToken,
+        decodeToken,
         isLogged
     };
 

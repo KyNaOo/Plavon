@@ -54,7 +54,7 @@ export default function RegisterScreen() {
     // Validate the password confirmation
     if (mdp !== confMdp) {
       setError({
-        "message": "Passwords do not match",
+        "message": "Mot de passe non identique !",
         "error": "Validation Error",
         "statusCode": 400,
       });
@@ -101,7 +101,7 @@ export default function RegisterScreen() {
             style={styles.snackBar}
             duration={3000}
           >
-            {error.message[0]}
+            {Array.isArray(error.message) ? error.message[0] : error.message}
           </Snackbar>
           <View style={styles.topContainer}>
             <Image
