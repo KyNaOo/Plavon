@@ -29,11 +29,17 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: 'Le prénom ne doit pas être vide',
   })
+  @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
+    message: "Prénom invalide",
+  })
   firstName: string;
 
   @IsString()
   @IsNotEmpty({
-    message: 'Le nom de doit pas être vide',
+    message: 'Le nom ne doit pas être vide',
+  })
+  @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
+    message: "Nom invalide",
   })
   lastName: string;
 
