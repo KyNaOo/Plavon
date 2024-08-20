@@ -14,12 +14,11 @@ export default function TabLayout() {
     const { isLogged } = useAuth();
 
     useEffect(() => {
-        const userLogged = async () => {
-            const isUserLogged = await isLogged();
+        isLogged().then((isUserLogged) => {
             if (!isUserLogged) {
                 router.navigate('/');
             }
-        }
+        })
     }, []);
 
     return (
