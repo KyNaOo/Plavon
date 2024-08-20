@@ -18,10 +18,9 @@ const MyForm: React.FC = () => {
 
     useEffect(() => {
         async function fetchData() {
-            console.log(getToken)
             const token = await decodeToken();
-            setAuthor(token.id);
-            console.log(author);
+            setAuthor(token.sub);
+            console.log(token.sub);
         }
         fetchData();
     }, []);
@@ -88,12 +87,7 @@ const MyForm: React.FC = () => {
                     onChangeText={setGroup}
                     style={styles.input}
                 />
-                <TextInput
-                    label="Author"
-                    value={author}
-                    onChangeText={setAuthor}
-                    style={styles.input}
-                />
+
                 <Button style={{ marginBottom: 40 }} mode="contained" onPress={submitForm}>
                     Ajoute un plavon
                 </Button>
