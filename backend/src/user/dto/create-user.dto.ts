@@ -17,31 +17,27 @@ export class CreateUserDto {
     message: 'Le mot de passe ne doit pas être vide !',
   })
   @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^~()\[\]{}|;:"'<>,./?+=_\\-])[A-Za-z\d@$!%*?&#^~()\[\]{}|;:"'<>,./?+=_\\-]{8,}$/,
     {
       message:
-        'Le mot de passe doit contenir au minimum 8 caractères, 1 majuscule, 1 minuscule et un caractère spécial',
+        'Le mot de passe doit contenir au minimum 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre, et un caractère spécial',
     },
   )
   password: string;
 
+  @IsNotEmpty()
   @IsString()
-  @IsNotEmpty({
-    message: 'Le prénom ne doit pas être vide',
-  })
   @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
-    message: "Prénom invalide",
-  })
-  firstName: string;
-
-  @IsString()
-  @IsNotEmpty({
-    message: 'Le nom ne doit pas être vide',
-  })
-  @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
-    message: "Nom invalide",
+    message: 'Nom invalide ou vide',
   })
   lastName: string;
+  
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
+    message: 'Prénom invalide ou vide',
+  })
+  firstName: string;
 
   @IsString()
   @IsNotEmpty({
