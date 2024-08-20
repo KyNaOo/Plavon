@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { router, Tabs } from 'expo-router';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
@@ -7,9 +7,19 @@ import AvatarIcon from "react-native-paper/src/components/Avatar/AvatarIcon";
 
 import { Avatar } from "react-native-paper";
 import TopBar from "@/components/TopBar";
+import {useAuth} from "@/services/AuthContext";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
+    const { isLogged } = useAuth();
+
+    useEffect(() => {
+        isLogged().then((isUserLogged) => {
+            if (!isUserLogged) {
+                router.navigate('/');
+            }
+        })
+    }, []);
 
     return (
         <>
