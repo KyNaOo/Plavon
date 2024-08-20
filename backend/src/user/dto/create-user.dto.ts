@@ -1,12 +1,21 @@
 import { IsString, IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
 export class CreateUserDto {
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail(
+    {},
+    {
+      message: 'Vous devez entrer un email valide !',
+    },
+  )
+  @IsNotEmpty({
+    message: "L'email ne doit pas être vide !",
+  })
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'Le mot de passe ne doit pas être vide !',
+  })
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     {
@@ -17,14 +26,20 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'Le prénom ne doit pas être vide',
+  })
   firstName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'Le nom de doit pas être vide',
+  })
   lastName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'La bio ne doit pas être vide',
+  })
   bio: string;
 }
