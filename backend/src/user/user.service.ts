@@ -74,4 +74,60 @@ export class UserService {
     }
     return null;
   }
+
+  async addFriend(userId: string, friendId: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: {
+        id: friendId,
+      },
+      relations: ['friends'],
+    });
+
+    if (user && friend) {
+      user.friends.push(friend);
+      friend.friends.push(user);
+      await this.userRepository.save(user);
+      await this.userRepository.save(friend);
+    }
+  }
+
+  async removeFriend(userId: string, friendId: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: {
+        id: friendId,
+      },
+      relations: ['friends'],
+    });
+
+    if (user && friend) {
+      user.friends = user.friends.filter((f) => f.id !== friendId);
+      await this.userRepository.save(user);
+      friend.friends = friend.friends.filter((f) => f.id !== userId);
+      await this.userRepository.save(friend);
+    }
+  }
+
+  async getFriends(userId: string): Promise<User[]> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+    return user ? user.friends : [];
+  }
 }

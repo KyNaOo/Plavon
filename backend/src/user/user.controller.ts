@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { InterestService } from '../interest/interest.service';
 import { Interest } from '../interest/entities/interest.entity';
+import { User } from './entities/user.entity';
 
 @ApiTags('User')
 @Controller('user')
@@ -108,5 +109,26 @@ export class UserController {
     );
 
     return this.userService.save(user);
+  }
+
+  @Post(':userId/friends/:friendId')
+  async addFriend(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ): Promise<void> {
+    await this.userService.addFriend(userId, friendId);
+  }
+
+  @Delete(':userId/friends/:friendId')
+  async removeFriend(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ): Promise<void> {
+    await this.userService.removeFriend(userId, friendId);
+  }
+
+  @Get(':userId/friends')
+  async getFriends(@Param('userId') userId: string): Promise<User[]> {
+    return this.userService.getFriends(userId);
   }
 }

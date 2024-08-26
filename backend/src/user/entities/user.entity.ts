@@ -66,4 +66,18 @@ export class User {
   @OneToMany(() => Plavon, (plavon) => plavon.author)
   @JoinColumn({ name: 'plavon_id', referencedColumnName: 'id' })
   plavons: Plavon[];
+
+  @ManyToMany(() => User, (user) => user.friends)
+  @JoinTable({
+    name: 'friendships',
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'friendId',
+      referencedColumnName: 'id',
+    },
+  })
+  friends: User[];
 }

@@ -31,7 +31,7 @@ export class CreateUserDto {
     message: 'Nom invalide ou vide',
   })
   lastName: string;
-  
+
   @IsNotEmpty()
   @IsString()
   @Matches(/^[a-zA-ZÀ-ÿ'-]+$/, {
