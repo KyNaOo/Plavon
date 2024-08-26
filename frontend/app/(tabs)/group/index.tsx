@@ -1,18 +1,18 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, StatusBar, Platform, ScrollView } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, StatusBar, ScrollView } from 'react-native';
 import { Card, Chip, Searchbar, TextInput, IconButton, Button } from 'react-native-paper';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-  runOnJS
-} from 'react-native-reanimated';
 import Colors from '@/constants/Colors';
 import FullScreenModal from '@/components/FullScreenModal';
+import api from '@/services/api';
+import { useAuth } from '@/services/AuthContext';
 
-interface FriendData {
-  name: string;
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  bio: string;
 }
 
 interface CardData {
@@ -21,11 +21,13 @@ interface CardData {
 }
 
 export default function GroupScreen() {
-  const friendData: FriendData[] = [
-    { name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' },
-    { name: 'David' }, { name: 'Emma' }, { name: 'Frank' },
-    { name: 'Grace' }, { name: 'Henry' }
-  ];
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [groupName, setGroupName] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedUsers, setSelectedUsers] = useState<UserData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const {getToken} = useAuth();
 
   const cardData: CardData[] = [
     { title: "Group 1", color: Colors.light.iconColor },
@@ -34,28 +36,47 @@ export default function GroupScreen() {
     { title: "Group 4", color: Colors.light.iconColor },
   ];
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [groupName, setGroupName] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedNames, setSelectedNames] = useState<string[]>([]);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const token = await getToken();
+    
+      const response = await api.get('/user/except', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response.data);
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSearchQuery('');
-    setSelectedNames([]);
+    setSelectedUsers([]);
     setGroupName('');
   };
 
-  const filteredFriends = friendData.filter(friend =>
-    friend.name.toLowerCase().includes(searchQuery.toLowerCase()) && !selectedNames.includes(friend.name)
+  const filteredUsers = users.filter(user =>
+    user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) && 
+    !selectedUsers.some(selectedUser => selectedUser.id === user.id)
   );
 
-  const handleNameSelect = useCallback((name: string) => {
-    setSelectedNames(prev => [...prev, name]);
+  const handleUserSelect = useCallback((user: UserData) => {
+    setSelectedUsers(prev => [...prev, user]);
   }, []);
 
-  const handleRemoveName = useCallback((name: string) => {
-    setSelectedNames(prev => prev.filter(n => n !== name));
+  const handleRemoveUser = useCallback((userId: string) => {
+    setSelectedUsers(prev => prev.filter(user => user.id !== userId));
   }, []);
 
   const renderCard = ({ item }: { item: CardData }) => (
@@ -87,13 +108,13 @@ export default function GroupScreen() {
         style={styles.textInput}
       />
       <View style={styles.chipContainer}>
-        {selectedNames.map((name) => (
+        {selectedUsers.map((user) => (
           <Chip
-            key={name}
-            onClose={() => handleRemoveName(name)}
+            key={user.id}
+            onClose={() => handleRemoveUser(user.id)}
             style={styles.chip}
           >
-            {name}
+            {`${user.firstName} ${user.lastName}`}
           </Chip>
         ))}
       </View>
@@ -103,13 +124,18 @@ export default function GroupScreen() {
         value={searchQuery}
         style={styles.searchBar}
       />
-      {filteredFriends.map((item) => (
-        <Card key={item.name} style={styles.friendCard} onPress={() => handleNameSelect(item.name)}>
-          <Card.Content>
-            <Text style={styles.friendName}>{item.name}</Text>
-          </Card.Content>
-        </Card>
-      ))}
+      {isLoading ? (
+        <Text>Loading users...</Text>
+      ) : (
+        filteredUsers.map((user) => (
+          <Card key={user.id} style={styles.friendCard} onPress={() => handleUserSelect(user)}>
+            <Card.Content>
+              <Text style={styles.friendName}>{`${user.firstName} ${user.lastName}`}</Text>
+              <Text style={styles.friendEmail}>{user.email}</Text>
+            </Card.Content>
+          </Card>
+        ))
+      )}
       <View style={styles.buttonContainer}>
         <Button
           mode="contained"
@@ -179,7 +205,6 @@ const styles = StyleSheet.create({
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-
   },
   chip: {
     margin: 4,
@@ -187,10 +212,8 @@ const styles = StyleSheet.create({
   searchBar: {
     marginBottom: 10,
     borderRadius: 8,
-
   },
   friendCard: {
-
     marginBottom: 8,
     width: '100%',
     borderRadius: 8,
@@ -200,6 +223,12 @@ const styles = StyleSheet.create({
   friendName: {
     fontFamily: 'PoppinsRegular',
     fontSize: 16,
+    color:'white'
+  },
+  friendEmail: {
+    fontFamily: 'PoppinsRegular',
+    fontSize: 12,
+    color: 'white',
   },
   buttonContainer: {
     marginTop: 20,
@@ -212,7 +241,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'PoppinsRegular',
     fontSize: 16,
-
   },
   modalScrollView: {
     flex: 1,
