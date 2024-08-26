@@ -52,13 +52,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return jwtDecode(token);
     }
 
-
-
-    const isLogged = () => {
-        const token = getToken();
-        return !!token;
-    }
-
     const value = {
         saveToken,
         logout,

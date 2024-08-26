@@ -1,24 +1,23 @@
 import * as React from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
     Animated,
-    TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
     TextInput,
-    KeyboardAvoidingView, Platform
+    TouchableOpacity,
+    View
 } from 'react-native';
 import {Avatar, Chip, IconButton, Searchbar} from 'react-native-paper';
 import Colors from '@/constants/Colors';
-import TopBar from "@/components/TopBar";
-import ScrollView = Animated.ScrollView;
-import {useEffect, useRef, useState} from "react";
 import {router} from "expo-router";
-import CustomModal from "@/components/Modal";
 import FullScreenModal from "@/components/FullScreenModal";
 import {MaterialIcons} from "@expo/vector-icons";
 import api from "@/services/api";
 import {useAuth} from "@/services/AuthContext";
+import ScrollView = Animated.ScrollView;
 
 export default function DetailsProfile() {
     type User = {
@@ -27,46 +26,42 @@ export default function DetailsProfile() {
         email: string;
         bio: string;
     };
+    type Interest = {
+        id: string;
+        name: string;
+    }
 
     const [isEditingBio, setIsEditingBio] = useState(false);
     const [bioText, setBioText] = useState<string>();
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-    const [availableInterests, setAvailableInterests] = useState<string[]>([]);
-    const [displayedInterests, setDisplayedInterests] = useState<string[]>(selectedInterests);
+    const [availableInterests, setAvailableInterests] = useState<Interest[]>([]);
+    const [userInterests, setUserInterests] = useState<Interest[]>([]);
+    const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
     const [user, setUser] = useState<User>();
+    const [userId, setUserId] = useState();
     const searchInputRef = useRef<TextInput>(null)
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredInterests, setFilteredInterests] = useState(availableInterests);
-    const {getToken} = useAuth();
+    const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
+    const {decodeToken, getToken} = useAuth();
+    const [bearerToken, setBearerToken] = useState<any>()
 
-    const getAllInterests = async () => {
-        try {
-            // if (await getToken()){
-            //     console.warn(await getToken());
-            // } else {
-            //     console.warn("b");
-            // }
-            const response = await api.get('/interest');
-            if (response.status === 200) {
-                const allInterests = response.data.map((interest: any) => interest.name);
-                setAvailableInterests(allInterests);
-                setFilteredInterests(allInterests); // Mettre à jour les intérêts filtrés avec tous les intérêts
-            }
-        } catch (error) {
-            // @ts-ignore
-            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
-        }
-    }
     const stopEditingBio = async () => {
-        setIsEditingBio(false);
+        if (bioText==''){
+            setIsEditingBio(false);
+        }
         try {
-            const response = await api.patch('/user/22d8ee56-01a0-473b-a5f9-9f6172b97613', {
-                bio: bioText,
-            });
+            const response = await api.patch(`/user/${userId}`, {
+                    bio: bioText
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${bearerToken}`
+                    },
+                });
+            getUserInfos();
         } catch (error) {
             // @ts-ignore
-            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
+            console.error("Erreur lors de la modification de la bio :", JSON.parse(error.request.response));
         }
     }
     const onChangeSearch = (query: string) => {
@@ -76,55 +71,116 @@ export default function DetailsProfile() {
         } else {
             setFilteredInterests(
                 availableInterests.filter((interest) =>
-                    interest.toLowerCase().includes(query.toLowerCase())
+                    interest.name.toLowerCase().includes(query.toLowerCase())
                 )
             );
         }
     };
-    const removeInterest = (interest: string) => {
-        setSelectedInterests(selectedInterests.filter(item => item !== interest));
-        const updatedAvailableInterests = [...availableInterests, interest].sort();
+
+    async function getUserInterests() {
+        const response = await api.get(`/user/${userId}/interests`, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+        if (response.status === 200) {
+            const myInterests = response.data.map((interest: any) => interest);
+            setUserInterests(myInterests);
+            setSelectedInterests(myInterests);
+        }
+    }
+
+    async function getAvailableInterests() {
+        const response = await api.get(`/user/${userId}/available-interests`, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+        if (response.status === 200) {
+            const theAvailableInterests = response.data.map((interest: any) => interest);
+            setAvailableInterests(theAvailableInterests);
+            setFilteredInterests(theAvailableInterests);
+        }
+    }
+
+    const removeInterest = async (interest: any) => {
+        const updatedSelectedInterests = selectedInterests.filter(item => item.id !== interest.id);
+        setSelectedInterests(updatedSelectedInterests);
+
+        const updatedAvailableInterests = [...availableInterests, interest].sort((a, b) => a.name.localeCompare(b.name));
         setAvailableInterests(updatedAvailableInterests);
-        const updatedFilteredInterests = [...filteredInterests, interest].sort();
+
+        const updatedFilteredInterests = [...filteredInterests, interest].sort((a, b) => a.name.localeCompare(b.name));
         setFilteredInterests(updatedFilteredInterests);
     };
 
-
-    const addInterest = (interest: string) => {
+    const addInterest = (interest: any) => {
         if (selectedInterests.length >= 6) {
             alert('Vous ne pouvez pas ajouter plus de 6 centres d’intérêt.');
             return;
         }
-        if (!selectedInterests.includes(interest)) {
-            setAvailableInterests(availableInterests.filter(item => item !== interest));
+
+        if (!selectedInterests.some(item => item.id === interest.id)) {
+            setAvailableInterests(availableInterests.filter(item => item.id !== interest.id));
             setSelectedInterests([...selectedInterests, interest]);
-            setFilteredInterests(filteredInterests.filter(item => item !== interest));
+            setFilteredInterests(filteredInterests.filter(item => item.id !== interest.id));
         }
     };
 
+    async function updateInterests() {
+        const myIdInterests = selectedInterests.map((interest: any) => interest.id);
+        const response = await api.put(`/user/${userId}/interests`, {
+            interests: myIdInterests,
+        }, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+    }
+
     const handleCloseModal = () => {
         setIsModalVisible(!isModalVisible);
-        setDisplayedInterests([...selectedInterests]);
+        updateInterests();
+        setUserInterests([...selectedInterests]);
     };
 
     async function getUserInfos() {
         try {
-            const response = await api.get('/user/22d8ee56-01a0-473b-a5f9-9f6172b97613');
-            console.warn(response.data.bio);
+            const response = await api.get(`/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                }
+            });
             if (response.status === 200) {
-                setUser({firstName: response.data.firstName, lastName: response.data.lastName, email: response.data.email, bio: response.data.bio});
+                setUser({
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    email: response.data.email,
+                    bio: response.data.bio
+                });
             }
         } catch (error) {
             // @ts-ignore
-            console.error("Erreur lors de la récupération des intérêts :", JSON.parse(error.request.response));
+            console.error("Erreur lors de la récupération des infos :", JSON.parse(error.request.response));
         }
-
     }
 
     useEffect(() => {
-        getAllInterests()
-        getUserInfos()
+        getToken().then((token) => {
+            setBearerToken(token);
+        });
+        decodeToken().then((token) => {
+            setUserId(token.sub)
+        })
     }, []);
+
+    useEffect(() => {
+        if(bearerToken){
+            getAvailableInterests()
+            getUserInfos()
+            getUserInterests()
+        }
+    }, [userId, bearerToken]);
 
     return (
         <KeyboardAvoidingView
@@ -161,8 +217,7 @@ export default function DetailsProfile() {
                             <IconButton
                                 icon="pencil"
                                 size={20}
-                                // onPress={() => setIsEditingBio(true)}
-                                onPress={() => getAllInterests()}
+                                onPress={() => setIsEditingBio(true)}
                                 style={styles.bioIcon}
                             />
                         </View>
@@ -191,9 +246,9 @@ export default function DetailsProfile() {
                     </View>
 
                     <View style={styles.interestsContainer}>
-                        {displayedInterests.map((interest, index) => (
+                        {userInterests.map((interest, index) => (
                             <Chip key={index} style={styles.chip}>
-                                <Text style={styles.chipText}>{interest}</Text>
+                                <Text style={styles.chipText}>{interest.name}</Text>
                             </Chip>
                         ))}
                     </View>
@@ -206,28 +261,26 @@ export default function DetailsProfile() {
                 >
                     <ScrollView
                         contentContainerStyle={styles.modalScrollViewContent}
-                        // keyboardShouldPersistTaps="handled"
                         >
-                    <View style={styles.modalChipsContainer}>
-                        {selectedInterests.map((interest, index) => (
-                            <Chip
-                                key={index}
-                                style={styles.chip}
-                                onClose={() => removeInterest(interest)}
-
-                            >
-                                <Text style={styles.chipText}>{interest}</Text>
-                            </Chip>
-                        ))}
-                    </View>
+                        <View style={styles.modalChipsContainer}>
+                            {selectedInterests.map((interest, index) => (
+                                <Chip
+                                    key={index}
+                                    style={styles.chip}
+                                    onClose={() => removeInterest(interest)}
+                                >
+                                    <Text style={styles.chipText}>{interest.name}</Text>
+                                </Chip>
+                            ))}
+                        </View>
                         <View style={styles.center}>
-                        <Searchbar
-                            placeholder="Rechercher un centre d’intérêt"
-                            style={styles.searchInput}
-                            value={searchQuery}
-                            onChangeText={onChangeSearch}
-                            ref={searchInputRef}
-                        />
+                            <Searchbar
+                                placeholder="Rechercher un centre d’intérêt"
+                                style={styles.searchInput}
+                                value={searchQuery}
+                                onChangeText={onChangeSearch}
+                                ref={searchInputRef}
+                            />
                         </View>
                     <View style={styles.searchResultsContainer}>
                         {filteredInterests.map((interest, index) => (
@@ -235,11 +288,11 @@ export default function DetailsProfile() {
                                 key={index}
                                 style={styles.chip}
                                 icon={() => (
-                                    <MaterialIcons name="add" size={24} color="white" /> // "close" est une croix droite
+                                    <MaterialIcons name="add" size={24} color="white" />
                                 )}
                                 onPress={() => addInterest(interest)}
                             >
-                                <Text style={styles.chipText}>{interest}</Text>
+                                <Text style={styles.chipText}>{interest.name}</Text>
                             </Chip>
                         ))}
                     </View>
