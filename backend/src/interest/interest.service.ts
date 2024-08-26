@@ -9,11 +9,11 @@ import { Repository } from 'typeorm';
 export class InterestService {
   constructor(
     @InjectRepository(Interest)
-    private interestRepository: Repository<Interest>,
+    private readonly interestRepository: Repository<Interest>,
   ) {}
-
-  create(createInterestDto: CreateInterestDto) {
-    const interest = this.interestRepository.create(createInterestDto);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async create(createInterestDto: CreateInterestDto) {
+    const interest = await this.interestRepository.create(createInterestDto);
     return this.interestRepository.save(interest);
   }
 
@@ -26,7 +26,7 @@ export class InterestService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateInterestDto: UpdateInterestDto) {
+  update(id: string, updateInterestDto: UpdateInterestDto) {
     return `This action updates a #${id} interest`;
   }
 

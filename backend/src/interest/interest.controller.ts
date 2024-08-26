@@ -37,7 +37,7 @@ export class InterestController {
     @Param('id') id: string,
     @Body() updateInterestDto: UpdateInterestDto,
   ) {
-    return this.interestService.update(+id, updateInterestDto);
+    return this.interestService.update(id, updateInterestDto);
   }
 
   @Delete(':id')
