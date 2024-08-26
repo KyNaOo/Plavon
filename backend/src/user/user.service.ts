@@ -38,6 +38,13 @@ export class UserService {
     return await this.userRepository.find();
   }
 
+  async findAllExceptedOne(excludedUserId: string) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id != :excludedUserId', { excludedUserId })
+      .getMany();
+  }
+
   async findOne(
     id: string,
     options?: { relations: string[] },
@@ -73,5 +80,61 @@ export class UserService {
       return this.userRepository.save(user);
     }
     return null;
+  }
+
+  async addFriend(userId: string, friendId: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: {
+        id: friendId,
+      },
+      relations: ['friends'],
+    });
+
+    if (user && friend) {
+      user.friends.push(friend);
+      friend.friends.push(user);
+      await this.userRepository.save(user);
+      await this.userRepository.save(friend);
+    }
+  }
+
+  async removeFriend(userId: string, friendId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: {
+        id: friendId,
+      },
+      relations: ['friends'],
+    });
+
+    if (user && friend) {
+      user.friends = user.friends.filter((f) => f.id !== friendId);
+      friend.friends = friend.friends.filter((f) => f.id !== userId);
+      await this.userRepository.save(friend);
+      return await this.userRepository.save(user);
+    }
+  }
+
+  async getFriends(userId: string): Promise<User[]> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['friends'],
+    });
+    return user ? user.friends : [];
   }
 }

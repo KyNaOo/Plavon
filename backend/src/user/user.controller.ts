@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -16,6 +17,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { InterestService } from '../interest/interest.service';
 import { Interest } from '../interest/entities/interest.entity';
+import { User } from './entities/user.entity';
+import { Request } from 'express';
+import { jwtDecode } from 'jwt-decode';
 
 @ApiTags('User')
 @Controller('user')
@@ -34,6 +38,21 @@ export class UserController {
   @Get()
   findAll() {
     return this.userService.findAll();
+  }
+
+  @Get('except')
+  async getAllUsersExcept(@Req() req: Request) {
+    let token, userId;
+    if (req.headers.authorization) {
+      token = req.headers.authorization.slice('Bearer '.length);
+      token = jwtDecode(token);
+      userId = token.sub;
+    }
+    if (userId) {
+      return this.userService.findAllExceptedOne(userId);
+    } else {
+      return 'User not found';
+    }
   }
 
   @Get(':id')
@@ -108,5 +127,26 @@ export class UserController {
     );
 
     return this.userService.save(user);
+  }
+
+  @Post(':userId/friends/:friendId')
+  async addFriend(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ): Promise<void> {
+    await this.userService.addFriend(userId, friendId);
+  }
+
+  @Delete(':userId/friends/:friendId')
+  async removeFriend(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ): Promise<void> {
+    await this.userService.removeFriend(userId, friendId);
+  }
+
+  @Get(':userId/friends')
+  async getFriends(@Param('userId') userId: string): Promise<User[]> {
+    return this.userService.getFriends(userId);
   }
 }
