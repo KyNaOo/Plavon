@@ -29,7 +29,7 @@ export class InterestController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.interestService.findOne(+id);
+    return this.interestService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class InterestController {
     @Param('id') id: string,
     @Body() updateInterestDto: UpdateInterestDto,
   ) {
-    return this.interestService.update(+id, updateInterestDto);
+    return this.interestService.update(id, updateInterestDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.interestService.remove(+id);
+    return this.interestService.remove(id);
   }
 }

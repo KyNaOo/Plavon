@@ -38,6 +38,19 @@ export class UserService {
     return await this.userRepository.find();
   }
 
+  async findOne(
+    id: string,
+    options?: { relations: string[] },
+  ): Promise<User | null> {
+    if (options) {
+      return await this.userRepository.findOne({
+        ...options,
+        where: { id: id },
+      });
+    }
+    return await this.userRepository.findOneBy({ id });
+  }
+
   async findOneById(id: string): Promise<User | null> {
     return await this.userRepository.findOneBy({ id });
   }
@@ -53,5 +66,12 @@ export class UserService {
 
   async remove(id: string) {
     return await this.userRepository.delete(id);
+  }
+
+  async save(user: User | null) {
+    if (user) {
+      return this.userRepository.save(user);
+    }
+    return null;
   }
 }
