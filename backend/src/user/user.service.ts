@@ -38,6 +38,13 @@ export class UserService {
     return await this.userRepository.find();
   }
 
+  async findAllExceptedOne(excludedUserId: string) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id != :excludedUserId', { excludedUserId })
+      .getMany();
+  }
+
   async findOne(
     id: string,
     options?: { relations: string[] },
@@ -98,7 +105,7 @@ export class UserService {
     }
   }
 
-  async removeFriend(userId: string, friendId: string): Promise<void> {
+  async removeFriend(userId: string, friendId: string) {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
@@ -115,9 +122,9 @@ export class UserService {
 
     if (user && friend) {
       user.friends = user.friends.filter((f) => f.id !== friendId);
-      await this.userRepository.save(user);
       friend.friends = friend.friends.filter((f) => f.id !== userId);
       await this.userRepository.save(friend);
+      return await this.userRepository.save(user);
     }
   }
 

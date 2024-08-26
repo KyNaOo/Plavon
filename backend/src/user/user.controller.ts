@@ -37,6 +37,13 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('except/:excludedUserId')
+  async getAllUsersExcept(
+    @Param('excludedUserId') excludedUserId: string,
+  ): Promise<User[]> {
+    return this.userService.findAllExceptedOne(excludedUserId);
+  }
+
   @Get(':id')
   findOneById(@Param('id') id: string) {
     return this.userService.findOneById(id);
