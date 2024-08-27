@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Button, IconButton, } from 'react-native-paper';
+import {router} from 'expo-router';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, IconButton,} from 'react-native-paper';
 import DayComponent from './Date';
 import DateMoi from './DateMoi';
 import CardItem from './CardItem';
@@ -8,9 +8,15 @@ import {useEffect, useState} from "react";
 import {useAuth} from "@/services/AuthContext";
 import api from "@/services/api";
 
+interface Plavon {
+    name: string,
+    description: string,
+    startTime: Date,
+    endTime: Date,
+}
 
 export default function HomeScreen() {
-    const [plavons, setPlavons] = useState([])
+    const [plavons, setPlavons] = useState<Plavon[]>([])
     const [token, setToken] = useState<string>("")
     const {getToken} = useAuth();
 
@@ -42,12 +48,24 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.boxButton}>
-                <Button compact mode="outlined" onPress={() => console.log('Pressed')} style={{ margin: 10, width: 100, backgroundColor: 'white', borderColor: 'black', borderWidth: 1, }}>
-                    <Text style={{ fontWeight: 'bold', color: 'black' }}>Aujourd'hui</Text>
+                <Button compact mode="outlined" onPress={() => console.log('Pressed')} style={{
+                    margin: 10,
+                    width: 100,
+                    backgroundColor: 'white',
+                    borderColor: 'black',
+                    borderWidth: 1,
+                }}>
+                    <Text style={{fontWeight: 'bold', color: 'black'}}>Aujourd'hui</Text>
                 </Button>
 
-                <Button compact mode="outlined" onPress={() => router.navigate('/home/calendar')} style={{ margin: 10, width: 100, backgroundColor: 'white', borderColor: 'black', borderWidth: 1 }}>
-                    <Text style={{ fontWeight: 'bold', color: 'black' }}>Calendrier</Text>
+                <Button compact mode="outlined" onPress={() => router.navigate('/home/calendar')} style={{
+                    margin: 10,
+                    width: 100,
+                    backgroundColor: 'white',
+                    borderColor: 'black',
+                    borderWidth: 1
+                }}>
+                    <Text style={{fontWeight: 'bold', color: 'black'}}>Calendrier</Text>
                 </Button>
                 <IconButton
                     icon="plus"
@@ -56,20 +74,26 @@ export default function HomeScreen() {
                     onPress={() => console.log('Pressed')}
                     mode='outlined'
                     containerColor='white'
-                    style={{ alignSelf: 'center', marginLeft: 'auto', margin: 10 }}
+                    style={{alignSelf: 'center', marginLeft: 'auto', margin: 10}}
                 />
             </View>
 
-            <DayComponent />
-            <DateMoi />
+            <DayComponent/>
+            <DateMoi/>
 
             <View style={styles.txt}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>Mes Plavons audj</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold', color: 'black'}}>Mes Plavons audj</Text>
             </View>
 
             <ScrollView style={styles.modal}>
-                <CardItem title="Plavon 1" startTime="10:00" endTime="11:00" />
-                <CardItem title="Plavon 1" startTime="10:00" endTime="11:00" />
+                {plavons.map((plavon: Plavon, index) => (
+                    <CardItem
+                        key={index}
+                        title={plavon.name}
+                        startTime={plavon.startTime}
+                        endTime={plavon.endTime}
+                    />
+                ))}
             </ScrollView>
         </View>
     );
