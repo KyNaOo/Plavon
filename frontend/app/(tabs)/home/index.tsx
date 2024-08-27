@@ -1,11 +1,44 @@
-import { Link, router } from 'expo-router';
-import { View, Text, StyleSheet, ScrollViewComponent, ScrollView } from 'react-native';
-import { Avatar, Button, Card, IconButton, } from 'react-native-paper';
+import { router } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Button, IconButton, } from 'react-native-paper';
 import DayComponent from './Date';
 import DateMoi from './DateMoi';
 import CardItem from './CardItem';
+import {useEffect, useState} from "react";
+import {useAuth} from "@/services/AuthContext";
+import api from "@/services/api";
+
 
 export default function HomeScreen() {
+    const [plavons, setPlavons] = useState([])
+    const [token, setToken] = useState<string>("")
+    const {getToken} = useAuth();
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const token = await getToken();
+            if (token !== null) {
+                setToken(token)
+            }
+        }
+        fetchToken()
+    }, [getToken]);
+
+
+    useEffect(() => {
+        const fetchPlavons = async () => {
+            const response = await api.get('/plavon/today', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (response.status === 200) {
+                setPlavons(response.data.plavons)
+            }
+        }
+        fetchPlavons()
+    }, [token]);
+
     return (
         <View style={styles.container}>
             <View style={styles.boxButton}>

@@ -7,7 +7,7 @@ import api from '@/services/api';
 import {useAuth} from '@/services/AuthContext';
 import {useSocket} from "@/services/SocketIO/socket";
 
-interface UserData {
+export interface UserData {
     id: string;
     firstName: string;
     lastName: string;
@@ -49,7 +49,8 @@ export default function GroupScreen() {
             setGroups(groups);
         })
     }
-    React.useEffect(() => {
+
+    useEffect(() => {
         const fetchUserId = async () => {
             const id = await getUserId();
             setUserId(id);
@@ -59,7 +60,7 @@ export default function GroupScreen() {
     }, [getUserId]);
 
     useEffect(() => {
-        getAllGroups()
+        getAllGroups();
     }, [userId]);
 
     useEffect(() => {

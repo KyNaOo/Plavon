@@ -3,8 +3,6 @@ import { router, Tabs } from 'expo-router';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import AvatarIcon from "react-native-paper/src/components/Avatar/AvatarIcon";
-
 import { Avatar } from "react-native-paper";
 import TopBar from "@/components/TopBar";
 import {useAuth} from "@/services/AuthContext";
