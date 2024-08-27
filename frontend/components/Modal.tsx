@@ -4,6 +4,10 @@ import {
     Text,
     StyleSheet,
     Modal as RNModal,
+    TouchableOpacity,
+    ViewStyle,
+    TextStyle,
+    Animated,
     Platform,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
@@ -11,6 +15,7 @@ import {
     StatusBar,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import ScrollView = Animated.ScrollView;
 
 interface CustomModalProps {
     visible: boolean;
@@ -31,7 +36,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ visible, onClose, children, t
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.overlay}>
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <KeyboardAvoidingView 
+                        <KeyboardAvoidingView
                             behavior={Platform.OS === "ios" ? "padding" : "height"}
                             style={styles.modalContainer}
                         >
@@ -56,6 +61,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',
     },
+    modalOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
     modalContainer: {
         width: '100%',
         height: '75%',
@@ -64,10 +73,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#E6DEFF',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
+    },
+    modalContentContainer: {
         padding: 20,
         height: '100%',
     },
     modalHeader: {
+        height: 40,
+        backgroundColor: '#fff',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -76,6 +89,8 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 20,
+        alignSelf: 'center',
     },
 });
 
