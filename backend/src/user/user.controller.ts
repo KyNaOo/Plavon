@@ -68,7 +68,7 @@ export class UserController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    if(updateUserDto.password !== null){
+    if (updateUserDto.password !== null) {
       const hashedPassword = encodePassword(updateUserDto.password);
       updateUserDto.password = hashedPassword;
     }
