@@ -5,6 +5,7 @@ import {Stack} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from 'react';
 import 'react-native-reanimated';
+import SocketProvider from '@/services/SocketIO/SocketProvider';
 
 import {useColorScheme} from '@/components/useColorScheme';
 import {AuthProvider} from "@/services/AuthContext";
@@ -54,11 +55,13 @@ function RootLayoutNav() {
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <AuthProvider>
-                <Stack>
-                    <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                    <Stack.Screen name="index" options={{headerShown: false}}/>
-                    <Stack.Screen name="(authentication)" options={{headerShown: false}}/>
-                </Stack>
+                <SocketProvider>
+                    <Stack>
+                        <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+                        <Stack.Screen name="index" options={{headerShown: false}}/>
+                        <Stack.Screen name="(authentication)" options={{headerShown: false}}/>
+                    </Stack>
+                </SocketProvider>
             </AuthProvider>
         </ThemeProvider>
     );

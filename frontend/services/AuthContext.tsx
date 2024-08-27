@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 type AuthContextType = {
     saveToken: (token: string) => Promise<void>;
@@ -8,6 +8,7 @@ type AuthContextType = {
     getToken: () => Promise<string | null>;
     decodeToken: () => Promise<any>;
     isLogged: () => Promise<boolean>;
+    getUserId: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -44,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return !!token;
     }
 
-    const decodeToken = async () => {
+    const decodeToken = async (): Promise<JwtPayload | null> => {
         const token = await getToken();
         if (!token) {
             return null;
@@ -52,7 +53,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return jwtDecode(token);
     }
 
+    /**
+     * Get the user ID from the stored JWT token.
+     *
+     * Returns `null` if the token is not available.
+     *
+     * @returns {Promise<string | null>}
+     */
+    const getUserId = async (): Promise<string | null> => {
+        const token = await getToken();
+        if (!token) {
+            return null;
+        }
+        
+        const userId = jwtDecode(token)?.sub;
 
+        if (!userId) {
+            return null;
+        }
+
+        return userId;
+    }
 
     const value = {
         saveToken,
@@ -60,6 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         getToken,
         decodeToken,
         isLogged,
+        getUserId,
     };
 
     return <AuthContext.Provider value={value}>
