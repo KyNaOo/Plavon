@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Link, router} from 'expo-router';
 import {Button, IconButton, Snackbar, TextInput} from 'react-native-paper';
@@ -14,6 +14,7 @@ type error = {
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [mdp, setMdp] = useState('');
+    const [comfirmMdp, setConfirmMdp] = useState('');
     const [error, setError] = useState({
         "message": '',
         "error": '',
@@ -21,7 +22,10 @@ export default function LoginScreen() {
     });
     const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const {saveToken, getToken} = useAuth();
+    const [idUser, setIdUser] = useState<string>();
+    const [bearerToken, setBearerToken] = useState<any>();
+
+    const {saveToken, getToken, decodeToken} = useAuth();
 
     const dismissError = () => {
         setIsError(false);
@@ -32,25 +36,47 @@ export default function LoginScreen() {
         })
     }
 
-    const login = async () => {
+    const changePassword = async () => {
         setIsLoading(true);
-        const response = await api.post('/auth/login', {email: email, password: mdp})
-            .then((response) => {
-                return response
+        if(mdp === comfirmMdp && mdp !== '') {
+            const response = await api.patch(`/user/${idUser}`, {
+                password: mdp
+            },{
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                }
             })
-            .catch((error) => {
-            return error;
-        });
-        if (response.status === 200) {
-            await saveToken(response.data.access_token);
-            setIsLoading(false);
-            router.navigate('/settings/index');
-        } else {
-            setIsLoading(false);
-            setError(JSON.parse(response.request.response));
-            setIsError(true);
-        }
+                .then((response) => {
+                    return response
+                })
+                .catch((error) => {
+                return error;
+            });
+            if (response.status === 200) {
+                await saveToken(response.data.access_token);
+                setIsLoading(false);
+                router.navigate('/settings/index');
+            } else {
+                setIsLoading(false);
+                setError(JSON.parse(response.request.response));
+                setIsError(true);
+            }
+        }      
     }
+
+    const test = () => {
+        console.warn("my ID : " + idUser);
+        console.warn("my Bearer token : " + bearerToken);
+    }
+
+    useEffect(() => {
+        getToken().then((token) => {
+            setBearerToken(token);
+        });
+        decodeToken().then((token) => {
+            setIdUser(token.sub)
+        })
+    }, []);
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -81,16 +107,16 @@ export default function LoginScreen() {
                     <View style={styles.middleContainer}>
                         <TextInput
                             label="Mot de passe"
-                            value={email}
-                            onChangeText={(email) => setEmail(email)}
+                            value={mdp}
+                            onChangeText={(mdp) => setMdp(mdp)}
                             style={styles.input}
                             secureTextEntry
                             theme={{roundness: 5}}
                         />
                         <TextInput
                             label="Confirmer le mot de passe"
-                            value={mdp}
-                            onChangeText={(mdp) => setMdp(mdp)}
+                            value={comfirmMdp}
+                            onChangeText={(comfirmMdp) => setConfirmMdp(comfirmMdp)}
                             style={styles.input}
                             secureTextEntry
                             theme={{roundness: 5}}
@@ -102,7 +128,7 @@ export default function LoginScreen() {
                             buttonColor="#EFB4E9"
                             labelStyle={styles.buttonText}
                             style={styles.button}
-                            onPress={login}
+                            onPress={changePassword}
                             loading={isLoading}
                         >
                             Changer

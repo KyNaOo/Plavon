@@ -20,6 +20,7 @@ import { Interest } from '../interest/entities/interest.entity';
 import { User } from './entities/user.entity';
 import { Request } from 'express';
 import { jwtDecode } from 'jwt-decode';
+import { encodePassword } from 'src/utils/hashService';
 
 @ApiTags('User')
 @Controller('user')
@@ -67,6 +68,10 @@ export class UserController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    if(updateUserDto.password !== null){
+      const hashedPassword = encodePassword(updateUserDto.password);
+      updateUserDto.password = hashedPassword;
+    }
     return this.userService.update(id, updateUserDto);
   }
 
