@@ -54,9 +54,12 @@ export class GroupsGateway
   }
 
   @SubscribeMessage('createGroup')
-  async handleCreateGroup(client: Socket, data: CreateGroupDto) {
+  async handleCreateGroup(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: CreateGroupDto,
+  ) {
     try {
-      const group = this.groupsService.create(data);
+      const group = await this.groupsService.create(data);
       client.emit('groupCreated', group);
     } catch (error) {
       this.handleError(client, error);

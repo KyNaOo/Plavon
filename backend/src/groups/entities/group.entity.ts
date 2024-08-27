@@ -25,17 +25,6 @@ export class Group {
   messages: Message[];
 
   @ManyToMany(() => User, (user) => user.groups)
-  @JoinTable({
-    name: 'group_members',
-    joinColumn: {
-      name: 'group_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-    },
-  })
   members: User[];
 
   @Column('uuid')

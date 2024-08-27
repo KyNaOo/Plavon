@@ -48,7 +48,7 @@ export class User {
 
   @ManyToMany(() => Group, (group) => group.members)
   @JoinTable({
-    name: 'user_groups',
+    name: 'user_groups', // Utiliser un nom cohérent
     joinColumn: {
       name: 'user_id',
       referencedColumnName: 'id',

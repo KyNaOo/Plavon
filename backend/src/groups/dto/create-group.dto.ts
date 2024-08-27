@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsArray, IsObject, IsString, IsUUID } from 'class-validator';
 
 export class CreateGroupDto {
   @IsString()
@@ -6,4 +6,7 @@ export class CreateGroupDto {
 
   @IsUUID()
   readonly creatorId: string;
+
+  @IsArray()
+  members: string[];
 }

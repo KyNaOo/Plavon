@@ -22,11 +22,11 @@ export class GroupsService {
   /**
    * Creates a new group with the given data and adds the creator as a member.
    *
-   * @param {CreateGroupDto} createGroupDto - The data for creating the group.
    * @return {Promise<Group>} The newly created group.
    * @throws {NotFoundException} If the creator user is not found.
    *
    * @author [Gabriel LOPEZ](https://github.com/glopez-dev)
+   * @param data
    */
   async create(data: CreateGroupDto) {
     const user = await this.userRepository.findOne({
@@ -36,14 +36,22 @@ export class GroupsService {
     if (!user) {
       throw new NotFoundException(`User with id ${data.creatorId} not found`);
     }
+    const members = [user];
+    for (const memberId of data.members) {
+      const member = await this.userRepository.findOneBy({ id: memberId });
+      if (!member) {
+        throw new NotFoundException(`User with id ${memberId} not found`);
+      }
+      members.push(member);
+    }
 
     const newGroup = this.groupRepository.create({
-      ...data,
-      members: [user],
+      creatorId: user.id,
+      name: data.name,
+      members: members,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
     return await this.groupRepository.save(newGroup);
   }
 
@@ -119,12 +127,13 @@ export class GroupsService {
   }
 
   async findByUser(userId: string) {
-    const user = await this.userRepository.findOneBy({ id: userId });
-
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['groups'],
+    });
     if (!user) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
-
     return user.groups;
   }
 
