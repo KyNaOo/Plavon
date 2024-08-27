@@ -1,33 +1,69 @@
 import * as React from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
     Animated,
-    TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
     TextInput,
-    KeyboardAvoidingView, Platform
+    TouchableOpacity,
+    View
 } from 'react-native';
 import {Avatar, Chip, IconButton, Searchbar} from 'react-native-paper';
 import Colors from '@/constants/Colors';
-import TopBar from "@/components/TopBar";
-import ScrollView = Animated.ScrollView;
-import {useEffect, useRef, useState} from "react";
 import {router} from "expo-router";
-import CustomModal from "@/components/Modal";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import FullScreenModal from "@/components/FullScreenModal";
+import {MaterialIcons} from "@expo/vector-icons";
+import api from "@/services/api";
+import {useAuth} from "@/services/AuthContext";
+import ScrollView = Animated.ScrollView;
 
 export default function DetailsProfile() {
+    type User = {
+        firstName: string;
+        lastName: string;
+        email: string;
+        bio: string;
+    };
+    type Interest = {
+        id: string;
+        name: string;
+    }
+
     const [isEditingBio, setIsEditingBio] = useState(false);
-    const [bioText, setBioText] = useState("D’ailleurs mon zebla c’est Boris");
+    const [bioText, setBioText] = useState<string>();
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedInterests, setSelectedInterests] = useState(['Basket', 'Cinéma', 'Football', 'Billard']);
-    const [availableInterests, setAvailableInterests] = useState(['Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage','Tennis', 'Lecture', 'Musique', 'Voyage']);
-    const [displayedInterests, setDisplayedInterests] = useState(selectedInterests);
-    const scrollRef = useRef<KeyboardAwareScrollView>(null);
+    const [availableInterests, setAvailableInterests] = useState<Interest[]>([]);
+    const [userInterests, setUserInterests] = useState<Interest[]>([]);
+    const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
+    const [user, setUser] = useState<User>();
+    const [userId, setUserId] = useState();
     const searchInputRef = useRef<TextInput>(null)
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredInterests, setFilteredInterests] = useState(availableInterests);
+    const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
+    const {decodeToken, getToken} = useAuth();
+    const [bearerToken, setBearerToken] = useState<any>()
+
+    const stopEditingBio = async () => {
+        if (bioText==''){
+            setIsEditingBio(false);
+        }
+        try {
+            const response = await api.patch(`/user/${userId}`, {
+                    bio: bioText
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${bearerToken}`
+                    },
+                });
+            getUserInfos();
+        } catch (error) {
+            // @ts-ignore
+            console.error("Erreur lors de la modification de la bio :", JSON.parse(error.request.response));
+        }
+    }
     const onChangeSearch = (query: string) => {
         setSearchQuery(query);
         if (query === '') {
@@ -35,41 +71,116 @@ export default function DetailsProfile() {
         } else {
             setFilteredInterests(
                 availableInterests.filter((interest) =>
-                    interest.toLowerCase().includes(query.toLowerCase())
+                    interest.name.toLowerCase().includes(query.toLowerCase())
                 )
             );
         }
     };
-    const removeInterest = (interest: string) => {
-        setSelectedInterests(selectedInterests.filter(item => item !== interest));
-        setAvailableInterests([...availableInterests, interest]);
-    };
 
-    const handleFocus = () => {
-        if (scrollRef.current && searchInputRef.current) {
-            scrollRef.current.scrollToFocusedInput(searchInputRef.current, 0);
+    async function getUserInterests() {
+        const response = await api.get(`/user/${userId}/interests`, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+        if (response.status === 200) {
+            const myInterests = response.data.map((interest: any) => interest);
+            setUserInterests(myInterests);
+            setSelectedInterests(myInterests);
         }
+    }
+
+    async function getAvailableInterests() {
+        const response = await api.get(`/user/${userId}/available-interests`, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+        if (response.status === 200) {
+            const theAvailableInterests = response.data.map((interest: any) => interest);
+            setAvailableInterests(theAvailableInterests);
+            setFilteredInterests(theAvailableInterests);
+        }
+    }
+
+    const removeInterest = async (interest: any) => {
+        const updatedSelectedInterests = selectedInterests.filter(item => item.id !== interest.id);
+        setSelectedInterests(updatedSelectedInterests);
+
+        const updatedAvailableInterests = [...availableInterests, interest].sort((a, b) => a.name.localeCompare(b.name));
+        setAvailableInterests(updatedAvailableInterests);
+
+        const updatedFilteredInterests = [...filteredInterests, interest].sort((a, b) => a.name.localeCompare(b.name));
+        setFilteredInterests(updatedFilteredInterests);
     };
 
-    const addInterest = (interest: string) => {
+    const addInterest = (interest: any) => {
         if (selectedInterests.length >= 6) {
             alert('Vous ne pouvez pas ajouter plus de 6 centres d’intérêt.');
             return;
         }
-        if (!selectedInterests.includes(interest)) {
-            setAvailableInterests(availableInterests.filter(item => item !== interest));
+
+        if (!selectedInterests.some(item => item.id === interest.id)) {
+            setAvailableInterests(availableInterests.filter(item => item.id !== interest.id));
             setSelectedInterests([...selectedInterests, interest]);
-            setFilteredInterests(filteredInterests.filter(item => item !== interest));
+            setFilteredInterests(filteredInterests.filter(item => item.id !== interest.id));
         }
     };
 
+    async function updateInterests() {
+        const myIdInterests = selectedInterests.map((interest: any) => interest.id);
+        const response = await api.put(`/user/${userId}/interests`, {
+            interests: myIdInterests,
+        }, {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            }
+        })
+    }
+
     const handleCloseModal = () => {
         setIsModalVisible(!isModalVisible);
+        updateInterests();
+        setUserInterests([...selectedInterests]);
     };
 
+    async function getUserInfos() {
+        try {
+            const response = await api.get(`/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                }
+            });
+            if (response.status === 200) {
+                setUser({
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    email: response.data.email,
+                    bio: response.data.bio
+                });
+            }
+        } catch (error) {
+            // @ts-ignore
+            console.error("Erreur lors de la récupération des infos :", JSON.parse(error.request.response));
+        }
+    }
+
     useEffect(() => {
-        setDisplayedInterests(selectedInterests);
-    }, [isModalVisible]);
+        getToken().then((token) => {
+            setBearerToken(token);
+        });
+        decodeToken().then((token) => {
+            setUserId(token.sub)
+        })
+    }, []);
+
+    useEffect(() => {
+        if(bearerToken){
+            getAvailableInterests()
+            getUserInfos()
+            getUserInterests()
+        }
+    }, [userId, bearerToken]);
 
     return (
         <KeyboardAvoidingView
@@ -87,8 +198,8 @@ export default function DetailsProfile() {
                         source={{uri: 'https://your-image-url.com'}}
                         style={styles.avatar}
                     />
-                    <Text style={styles.name}>Ethan Bellaiche</Text>
-                    <Text style={styles.email}>ethanbellaiche0@gmail.com</Text>
+                    <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
+                    <Text style={styles.email}>{user?.email}</Text>
                     <View style={styles.separator}/>
                     <View style={styles.statsContainer}>
                         <View style={styles.stat}>
@@ -115,12 +226,12 @@ export default function DetailsProfile() {
                                 style={styles.bioText}
                                 value={bioText}
                                 onChangeText={setBioText}
-                                onBlur={() => setIsEditingBio(false)}
+                                onBlur={() => stopEditingBio()}
                                 autoFocus
                             />
                         ) : (
                             <>
-                                <Text style={styles.bioText}>{bioText}</Text>
+                                <Text style={styles.bioText}>{user?.bio}</Text>
                             </>
                         )}
                     </TouchableOpacity>
@@ -135,63 +246,58 @@ export default function DetailsProfile() {
                     </View>
 
                     <View style={styles.interestsContainer}>
-                        {displayedInterests.map((interest, index) => (
+                        {userInterests.map((interest, index) => (
                             <Chip key={index} style={styles.chip}>
-                                <Text style={styles.chipText}>{interest}</Text>
+                                <Text style={styles.chipText}>{interest.name}</Text>
                             </Chip>
                         ))}
                     </View>
                 </View>
                 {isModalVisible && <View style={styles.modalOverlay} />}
-                <CustomModal
+                <FullScreenModal
                     visible={isModalVisible}
                     onClose={handleCloseModal}
                     title="Vos centres d’intérêt"
                 >
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios'||'android' ? 'padding' : 'height'}
-                        style={styles.keyboardAvoidingView}
-                        keyboardVerticalOffset={Platform.select({ios: 0, android: 200})}
-                    >
                     <ScrollView
                         contentContainerStyle={styles.modalScrollViewContent}
-                        // keyboardShouldPersistTaps="handled"
                         >
-                    <View style={styles.modalChipsContainer}>
-                        {selectedInterests.map((interest, index) => (
-                            <Chip
-                                key={index}
-                                style={styles.chip}
-                                onClose={() => removeInterest(interest)}
-                            >
-                                <Text style={styles.chipText}>{interest}</Text>
-                            </Chip>
-                        ))}
-                    </View>
-                        <Searchbar
-                            placeholder="Rechercher un centre d’intérêt"
-                            style={styles.searchInput}
-                            value={searchQuery}
-                            onChangeText={onChangeSearch}
-                            ref={searchInputRef}
-                            onFocus={handleFocus}
-                        />
-
+                        <View style={styles.modalChipsContainer}>
+                            {selectedInterests.map((interest, index) => (
+                                <Chip
+                                    key={index}
+                                    style={styles.chip}
+                                    onClose={() => removeInterest(interest)}
+                                >
+                                    <Text style={styles.chipText}>{interest.name}</Text>
+                                </Chip>
+                            ))}
+                        </View>
+                        <View style={styles.center}>
+                            <Searchbar
+                                placeholder="Rechercher un centre d’intérêt"
+                                style={styles.searchInput}
+                                value={searchQuery}
+                                onChangeText={onChangeSearch}
+                                ref={searchInputRef}
+                            />
+                        </View>
                     <View style={styles.searchResultsContainer}>
                         {filteredInterests.map((interest, index) => (
                             <Chip
                                 key={index}
                                 style={styles.chip}
-                                icon="plus"
+                                icon={() => (
+                                    <MaterialIcons name="add" size={24} color="white" />
+                                )}
                                 onPress={() => addInterest(interest)}
                             >
-                                <Text style={styles.chipText}>{interest}</Text>
+                                <Text style={styles.chipText}>{interest.name}</Text>
                             </Chip>
                         ))}
                     </View>
                     </ScrollView>
-                    </KeyboardAvoidingView>
-                </CustomModal>
+                </FullScreenModal>
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -321,23 +427,22 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
         marginBottom: 20,
-        backgroundColor: '#fff',
-        padding: 20,
+        backgroundColor: Colors.light.white,
         borderRadius: 8,
     },
     modalChip: {
         margin: 4,
     },
     searchInput: {
-        width: '100%',
-        backgroundColor: '#fff',
+        width: '90%',
+        backgroundColor: Colors.light.greyBackground,
         marginBottom: 20,
     },
     searchResultsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: Colors.light.white,
         borderRadius: 8,
         marginBottom: 24,
     },
@@ -357,5 +462,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
