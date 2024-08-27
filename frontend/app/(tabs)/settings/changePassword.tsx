@@ -1,88 +1,110 @@
-import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { IconButton, Snackbar, TextInput, Button } from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Link, router} from 'expo-router';
+import {Button, IconButton, Snackbar, TextInput} from 'react-native-paper';
 import Colors from '@/constants/Colors';
 import api from "@/services/api";
-import { useAuth } from "@/services/AuthContext";
-import { router } from 'expo-router';
+import {useAuth} from "@/services/AuthContext";
+import { Alert } from 'react-native';
 
-export default function LoginScreen() {
+type error = {
+    "message": string[];
+    "error": string;
+    "statusCode": number;
+}
+
+export default function ChangePass() {
+
     const [mdp, setMdp] = useState('');
-    const [confirmMdp, setConfirmMdp] = useState('');
-    const [error, setError] = useState({ message: '', statusCode: 401 });
+    const [comfirmMdp, setConfirmMdp] = useState('');
+    const [error, setError] = useState({
+        "message": '',
+        "error": '',
+        "statusCode": 401
+    });
+    const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [idUser, setIdUser] = useState<string | undefined>(undefined);
-    const [bearerToken, setBearerToken] = useState<string | undefined>(undefined);
+    const [idUser, setIdUser] = useState<string>();
+    const [bearerToken, setBearerToken] = useState<any>();
 
-    const { getToken, decodeToken } = useAuth();
+    const {saveToken, getToken, decodeToken} = useAuth();
 
     const dismissError = () => {
-        setError({ message: '', statusCode: 401 });
-    };
+        setIsError(false);
+        setError({
+            "message": '',
+            "error": '',
+            "statusCode": 401
+        })
+    }
 
     const changePassword = async () => {
-        if (mdp !== confirmMdp || mdp === '') {
-            setError({ message: 'Les mots de passe ne correspondent pas ou sont vides.', statusCode: 400 });
+        if(mdp !== comfirmMdp || mdp === '') {
+            Alert.alert(
+                "Erreur",
+                "Les mots de passe ne correspondent pas ou sont vides.",
+                [{ text: "OK" }]
+            );
             return;
         }
-
+    
         setIsLoading(true);
-        try {
-            const response = await api.patch(
-                `/user/${idUser}`,
-                { password: mdp },
-                { headers: { Authorization: `Bearer ${bearerToken}` } }
-            );
-
-            if (response.status === 200) {
-                setIsLoading(false);
-                router.back();
-            } else {
-                setError({ message: JSON.parse(response.request.response).message[0], statusCode: response.status });
-                setIsLoading(false);
+        const response = await api.patch(`/user/${idUser}`, {
+            password: mdp
+        },{
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
             }
-        } catch (error: any) {
-            setError({ message: error.message, statusCode: error.response?.status || 500 });
+        })
+            .then((response) => {
+
+                return response
+            })
+            .catch((error) => {
+            return error;
+        });
+        if (response.status === 200) {
+            console.log(response.status);
             setIsLoading(false);
+            router.back();
+        } else {
+            setIsLoading(false);
+            setError(JSON.parse(response.request.response));
+            setIsError(true);
         }
-    };
+    }
 
     useEffect(() => {
         getToken().then((token) => {
-            if (token) {
-                setBearerToken(token);
-            }
+            setBearerToken(token);
         });
         decodeToken().then((token) => {
-            if (token) {
-                setIdUser(token.sub);
-            }
-        });
+            setIdUser(token.sub)
+        })
     }, []);
-
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoidingView}
             >
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View style={styles.iconButtonContainer}>
-                        <IconButton
-                            icon="arrow-left"
-                            size={32}
-                            iconColor="#EFB4E9"
-                            onPress={() => router.back()}
-                        />
-                    </View>
+                <View style={styles.iconButtonContainer}>
+                    <IconButton
+                        icon="arrow-left"
+                        size={32}
+                        iconColor="#EFB4E9"
+                        onPress={() => router.back()}
+                    />
+                </View>
                     <Snackbar
-                        visible={!!error.message}
+                        visible={isError}
                         onIconPress={dismissError}
                         onDismiss={dismissError}
                         style={styles.snackBar}
                         duration={3000}
                     >
-                        {error.message}
+                        {error.message[0]}
                     </Snackbar>
                     <View style={styles.topContainer}>
                         <Text style={styles.title}>Changer de mot de passe</Text>
@@ -91,18 +113,18 @@ export default function LoginScreen() {
                         <TextInput
                             label="Mot de passe"
                             value={mdp}
-                            onChangeText={setMdp}
+                            onChangeText={(mdp) => setMdp(mdp)}
                             style={styles.input}
                             secureTextEntry
-                            theme={{ roundness: 5 }}
+                            theme={{roundness: 5}}
                         />
                         <TextInput
                             label="Confirmer le mot de passe"
-                            value={confirmMdp}
-                            onChangeText={setConfirmMdp}
+                            value={comfirmMdp}
+                            onChangeText={(comfirmMdp) => setConfirmMdp(comfirmMdp)}
                             style={styles.input}
                             secureTextEntry
-                            theme={{ roundness: 5 }}
+                            theme={{roundness: 5}}
                         />
                     </View>
                     <View style={styles.buttonContainer}>
@@ -121,12 +143,12 @@ export default function LoginScreen() {
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: "white",
     },
     keyboardAvoidingView: {
         flex: 1,
@@ -134,6 +156,12 @@ const styles = StyleSheet.create({
     scrollViewContent: {
         flexGrow: 1,
         paddingHorizontal: 20,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 50,
+        left: 25,
+        zIndex: 1,
     },
     topContainer: {
         alignItems: 'center',
@@ -144,6 +172,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
+    },
+    image: {
+        width: 150,
+        height: 150,
+        resizeMode: 'contain',
+        marginBottom: 10,
     },
     buttonContainer: {
         width: '100%',
@@ -165,14 +199,25 @@ const styles = StyleSheet.create({
         fontSize: 25,
         color: Colors.light.itemBackground,
     },
+    description: {
+        fontFamily: 'PoppinsRegular',
+        color: 'white',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
     input: {
         width: '80%',
         marginBottom: 20,
     },
+    linkText: {
+        color: Colors.light.itemBackground,
+        textDecorationLine: 'underline',
+        fontFamily: 'PoppinsRegular',
+    },
     snackBar: {
         width: '100%',
         alignSelf: 'center',
-        marginLeft: 50,
+        marginLeft: 50
     },
     iconButtonContainer: {
         marginTop: 25,
