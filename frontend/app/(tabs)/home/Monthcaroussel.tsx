@@ -6,8 +6,9 @@ const Monthcaroussel = ({setMonth}) => {
     // Creating an array of months from January to June
     const data: string[] = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
+    const date = new Date();
     // State to track the current index
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(date.getMonth());
     useEffect(() => {
         setMonth(currentIndex)
     }, [currentIndex]);
@@ -21,8 +22,6 @@ const Monthcaroussel = ({setMonth}) => {
                     flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
-
-
                     opacity: isActive ? 1 : 0.5, // Apply opacity to non-active items
                 }}
             >
@@ -54,6 +53,7 @@ const Monthcaroussel = ({setMonth}) => {
                 borderWidth: 2,
                 borderColor: 'black',
             }}
+            defaultIndex={currentIndex}
             scrollAnimationDuration={500} // Duration of the scrolling animation
             onSnapToItem={(index: number) => setCurrentIndex(index)} // Update current index on item snap
             renderItem={renderItem} // Function to render each item in the carousel
