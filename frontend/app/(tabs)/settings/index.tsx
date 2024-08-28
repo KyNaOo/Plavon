@@ -19,6 +19,10 @@ export default function SettingsScreen() {
         router.navigate('/group/Chat');
     };
 
+    const navToPass = () => {
+        router.navigate('/settings/changePassword');
+    };
+
     const handleLogout = async () => {
         await logout();  
         router.replace('/'); 
@@ -39,7 +43,7 @@ export default function SettingsScreen() {
                         mode="outlined"
                         style={styles.button}
                         labelStyle={styles.buttonText}
-                        onPress={navToChat}
+                        onPress={navToPass}
                         icon="key-variant"
                     >
                         Changer mon mot de passe
