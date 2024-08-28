@@ -1,4 +1,4 @@
-import {router} from 'expo-router';
+import {router, usePathname, useSegments} from 'expo-router';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, IconButton,} from 'react-native-paper';
 import DayComponent from './Date';
@@ -20,7 +20,19 @@ export interface Plavon {
 export default function HomeScreen() {
     const [plavons, setPlavons] = useState<Plavon[]>([])
     const [token, setToken] = useState<string>("")
+    const pathname = usePathname();
     const {getToken} = useAuth();
+
+    const fetchPlavons = async () => {
+        const response = await api.get('/plavon/today', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        if (response.status === 200) {
+            setPlavons(response.data.plavons)
+        }
+    }
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -34,18 +46,8 @@ export default function HomeScreen() {
 
 
     useEffect(() => {
-        const fetchPlavons = async () => {
-            const response = await api.get('/plavon/today', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            if (response.status === 200) {
-                setPlavons(response.data.plavons)
-            }
-        }
         fetchPlavons()
-    }, [token]);
+    }, [token, pathname]);
 
     return (
         <View style={styles.container}>
