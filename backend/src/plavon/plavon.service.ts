@@ -6,6 +6,7 @@ import { Between, Repository } from 'typeorm';
 import { Plavon } from './entities/plavon.entity';
 import { User } from '../user/entities/user.entity';
 import { Group } from '../groups/entities/group.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Injectable()
 export class PlavonService {
@@ -98,6 +99,33 @@ export class PlavonService {
       order: {
         startTime: 'ASC',
       },
+      relations: ['author'],
+    });
+  }
+
+  async findPlavonsByMonth(author: string, month: number): Promise<Plavon[]> {
+    if (month < 1 || month > 12) {
+      throw new Error('Le mois doit être compris entre 1 et 12');
+    }
+
+    const user = await this.userRepository.findOneBy({ id: author });
+    if (!user) {
+      throw new NotFoundException(`User with id ${author} not found`);
+    }
+
+    const currentYear = new Date().getFullYear();
+    const startDate = new Date(currentYear, month - 1, 1);
+    const endDate = new Date(currentYear, month, 0);
+
+    return this.plavonRepository.find({
+      where: {
+        author: user,
+        startTime: Between(startDate, endDate),
+      },
+      order: {
+        startTime: 'ASC',
+      },
+      relations: ['author'],
     });
   }
 }

@@ -1,12 +1,48 @@
 // App.js
 import { router } from 'expo-router';  // Assurez-vous que l'import de 'expo-router' est correct
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { SafeAreaView, View, Text, StyleSheet, ScrollView } from 'react-native';
 import { IconButton, Button } from 'react-native-paper';
 import HorizontalTransaction from './Monthcaroussel';
-import CardCalendar from './CardCalendar';
+import {useAuth} from "@/services/AuthContext";
+import api from "@/services/api";
+import {Plavon} from "@/app/(tabs)/home/index";
+import CardItem from "@/app/(tabs)/home/CardItem";
 
 const App = () => {
+    const [plavons, setPlavons] = useState<Plavon[]>([])
+    const [month, setMonth] = useState<number>(0)
+    const [token, setToken] = useState<string>("")
+    const {getToken} = useAuth();
+
+    const fetchPlavons = async () => {
+        if (token.length !== 0) {
+            const response = await api.get(`/plavon/month/${month+1}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (response.status === 200) {
+                setPlavons(response.data.plavons)
+            }
+        }
+    }
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const token = await getToken();
+            if (token !== null) {
+                setToken(token)
+            }
+        }
+        fetchToken()
+    }, [getToken]);
+
+
+    useEffect(() => {
+        fetchPlavons()
+    }, [token, month]);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.boxButton}>
@@ -30,12 +66,19 @@ const App = () => {
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
-                <HorizontalTransaction />
+                <HorizontalTransaction setMonth={setMonth} />
                 <ScrollView style={{ height: '100%' }}   >
-
-                    <CardCalendar title="Plavon 1" startTime="10:00" endTime="11:00" />
-                    <CardCalendar title="Plavon 1" startTime="10:00" endTime="11:00" />
-
+                    {plavons.length > 0 ? plavons.map((plavon: Plavon, index) => (
+                        <CardItem
+                            key={index}
+                            title={plavon.name}
+                            startTime={plavon.startTime}
+                            endTime={plavon.endTime}
+                            author={plavon.author}
+                        />
+                    )):
+                        <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 20}}>Aucun plavons pour ce mois </Text>
+                    }
                 </ScrollView>
             </View>
 

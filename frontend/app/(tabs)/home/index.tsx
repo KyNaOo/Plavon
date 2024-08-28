@@ -4,15 +4,17 @@ import {Button, IconButton,} from 'react-native-paper';
 import DayComponent from './Date';
 import DateMoi from './DateMoi';
 import CardItem from './CardItem';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useAuth} from "@/services/AuthContext";
 import api from "@/services/api";
+import {UserData} from "@/app/(tabs)/group";
 
-interface Plavon {
+export interface Plavon {
     name: string,
     description: string,
     startTime: Date,
     endTime: Date,
+    author: UserData,
 }
 
 export default function HomeScreen() {
@@ -86,14 +88,18 @@ export default function HomeScreen() {
             </View>
 
             <ScrollView style={styles.modal}>
-                {plavons.map((plavon: Plavon, index) => (
+                {plavons.length > 0 ? plavons.map((plavon: Plavon, index) => (
                     <CardItem
                         key={index}
                         title={plavon.name}
                         startTime={plavon.startTime}
                         endTime={plavon.endTime}
+                        author={plavon.author}
                     />
-                ))}
+                )):
+                    <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 20}}>Aucun plavons aujourd'hui </Text>
+                }
+
             </ScrollView>
         </View>
     );

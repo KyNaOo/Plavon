@@ -20,7 +20,6 @@ import { Request } from 'express';
 
 @Controller('plavon')
 export class PlavonController {
-  private readonly logger = new Logger(PlavonController.name);
   constructor(private readonly plavonService: PlavonService) {}
 
   @Post()
@@ -74,6 +73,46 @@ export class PlavonController {
 
       if (plavons.length === 0) {
         return { message: "Aucun Plavon trouvé pour aujourd'hui", plavons: [] };
+      }
+
+      return { plavons };
+    } catch (error) {
+      console.error('Erreur lors de la recherche des Plavons:', error);
+      throw error;
+    }
+  }
+
+  @Get('month/:month')
+  @UseGuards(AuthGuard)
+  async findPlavonsForMonth(
+    @Req() req: Request,
+    @Param('month') month: number,
+  ) {
+    try {
+      let token: string | undefined;
+      let userId: string | undefined;
+
+      if (req.headers.authorization) {
+        token = req.headers.authorization.replace('Bearer ', '');
+        try {
+          const decoded = jwtDecode(token);
+          userId = decoded.sub;
+        } catch (error) {
+          throw new UnauthorizedException('Token invalide');
+        }
+      }
+
+      if (!userId) {
+        throw new UnauthorizedException('Utilisateur non authentifié');
+      }
+
+      const plavons = await this.plavonService.findPlavonsByMonth(
+        userId,
+        month,
+      );
+
+      if (plavons.length === 0) {
+        return { message: 'Aucun Plavon trouvé pour ce mois ci', plavons: [] };
       }
 
       return { plavons };

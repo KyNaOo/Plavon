@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Text, View} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 
-const Monthcaroussel = () => {
+const Monthcaroussel = ({setMonth}) => {
     // Creating an array of months from January to June
     const data: string[] = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
-
-
     // State to track the current index
     const [currentIndex, setCurrentIndex] = useState(0);
+    useEffect(() => {
+        setMonth(currentIndex)
+    }, [currentIndex]);
 
     // Function to render each item in the carousel
-    const renderItem = ({ item, index }: { item: string, index: number }) => {
+    const renderItem = ({item, index}: { item: string, index: number }) => {
         const isActive = index === currentIndex;
         return (
             <View
@@ -45,7 +46,6 @@ const Monthcaroussel = () => {
             height={50} // Height of the carousel
             data={data}
             style={{
-
                 width: '100%',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -53,13 +53,10 @@ const Monthcaroussel = () => {
                 borderTopRightRadius: 20,
                 borderWidth: 2,
                 borderColor: 'black',
-
-
             }}
-            scrollAnimationDuration={1000} // Duration of the scrolling animation
+            scrollAnimationDuration={500} // Duration of the scrolling animation
             onSnapToItem={(index: number) => setCurrentIndex(index)} // Update current index on item snap
             renderItem={renderItem} // Function to render each item in the carousel
-
         />
     );
 };
