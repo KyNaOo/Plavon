@@ -67,7 +67,7 @@ const App = () => {
 
             <View style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
                 <HorizontalTransaction setMonth={setMonth} />
-                <ScrollView style={{ height: '100%' }}   >
+                <ScrollView contentContainerStyle={{paddingBottom: 120}} >
                     {plavons.length > 0 ? plavons.map((plavon: Plavon, index) => (
                         <CardItem
                             key={index}
@@ -81,7 +81,6 @@ const App = () => {
                     }
                 </ScrollView>
             </View>
-
         </SafeAreaView >
     );
 };

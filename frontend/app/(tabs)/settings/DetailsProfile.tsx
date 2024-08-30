@@ -84,9 +84,11 @@ export default function DetailsProfile() {
             }
         })
         if (response.status === 200) {
-            const myInterests = response.data.map((interest: any) => interest);
-            setUserInterests(myInterests);
-            setSelectedInterests(myInterests);
+            if (response.data) {
+                const myInterests = response.data.map((interest: any) => interest);
+                setUserInterests(myInterests);
+                setSelectedInterests(myInterests);
+            }
         }
     }
 

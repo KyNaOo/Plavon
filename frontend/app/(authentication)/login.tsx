@@ -87,6 +87,7 @@ export default function LoginScreen() {
                             onChangeText={(email) => setEmail(email)}
                             style={styles.input}
                             theme={{roundness: 5}}
+                            autoCapitalize={'none'}
                         />
                         <TextInput
                             label="Mot de passe"

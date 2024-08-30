@@ -24,13 +24,15 @@ export default function HomeScreen() {
     const {getToken} = useAuth();
 
     const fetchPlavons = async () => {
-        const response = await api.get('/plavon/today', {
-            headers: {
-                Authorization: `Bearer ${token}`
+        if (token.length !== 0) {
+            const response = await api.get('/plavon/today', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (response.status === 200) {
+                setPlavons(response.data.plavons)
             }
-        })
-        if (response.status === 200) {
-            setPlavons(response.data.plavons)
         }
     }
 
